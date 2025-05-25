@@ -14,7 +14,7 @@ const map = L.map('map', {
   crs:       L.CRS.Simple,
   minZoom:   0,
   maxZoom:   maxZ
-}).setView(center, 0);
+}).setView(center, 2);
 
 console.log("🗺 map initialized at", center);
 
