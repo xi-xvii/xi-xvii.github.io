@@ -1,48 +1,33 @@
-// 🍃 Debug
-console.log("app.js running");
+// 1) Image dimensions and max zoom
+const imgW    = 11000;
+const imgH    = 11000;
+const maxZoom = 6;
 
-// 1) Your image’s size
-const imgW = 11000;
-const imgH = 11000;
-const maxZ = 6;
+// 2) Custom CRS that doesn’t flip Y
+const myCRS = Object.assign({}, L.CRS.Simple, {
+  transformation: new L.Transformation(1, 0, 1, 0)
+});
 
-// 2) Define the map “world” in pixel-units (lat=y, lng=x)
-const bounds = L.latLngBounds(
-  [0,    0   ],   // SW corner: bottom-left of image
-  [imgH, imgW]    // NE corner: top-right of image
-);
-console.log("📐 bounds set to", bounds);
+// 3) Define your image bounds in “pixel” units (lat=y, lng=x)
+const imageBounds = [[0, 0], [imgH, imgW]];
 
-// 3) Initialize the map & fit to bounds
+// 4) Init the map with that CRS and fit to bounds
 const map = L.map('map', {
-  crs:       L.CRS.Simple,
+  crs:       myCRS,
   minZoom:   0,
-  maxZoom:   maxZ,
+  maxZoom:   maxZoom,
   zoomControl: true
-}).fitBounds(bounds);
-console.log("🗺 map initialized");
+}).fitBounds(imageBounds);
 
-// 4) Add your tiles with the default numbering (tms: false)
-//    Leaflet will request only 0 ≤ x ≤ ceil(imgW/256)-1
-//                       and 0 ≤ y ≤ ceil(imgH/256)-1
+// 5) Add your tiles via standard XYZ (no negatives!)
 L.tileLayer('tiles/{z}/{x}/{y}.png', {
-  // no tms:true here!
-  noWrap:       true,
-  continuousWorld: false,
-  bounds:       bounds,
-  tileSize:     256,
-  minZoom:      0,
-  maxZoom:      maxZ,
-  errorTileUrl: ''   // blank instead of 404
+  noWrap:         true,
+  continuousWorld:false,
+  bounds:         imageBounds,
+  minZoom:        0,
+  maxZoom:        maxZoom,
+  errorTileUrl:   ''   // blank instead of 404s
 }).addTo(map);
-console.log("🖼 tileLayer added");
 
-// 5) Optional: lock panning to those bounds
-map.setMaxBounds(bounds);
-console.log("🔒 panning locked");
-
-// 6) Debug loading events
-map.on('tileload',  e => console.log("✅ tileload",  e.tile.src));
-map.on('tileerror', e => console.warn("❌ tileerror", e.tile.src));
-map.on('zoomend',   ()  => console.log("🔍 zoom to", map.getZoom()));
-map.on('moveend',   ()  => console.log("📍 center at", map.getCenter()));
+// 6) (Optional) lock panning so you never drift outside
+map.setMaxBounds(imageBounds);
