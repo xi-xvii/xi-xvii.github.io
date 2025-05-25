@@ -1,7 +1,7 @@
 // 1) Initialize a simple (flat) map in the #map div
 const map = L.map('map', {
   crs: L.CRS.Simple,
-  minZoom: -5,
+  minZoom: -3.5,
   zoomControl: true
 });
 
