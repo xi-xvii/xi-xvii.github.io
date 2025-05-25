@@ -20,8 +20,8 @@ const map = L.map('map', {
 });
 
 // 3) Use a GridLayer instead of TileLayer
-L.gridLayer({
-  tileSize: 256,
+// TEMP: overlay the whole PNG to verify map & bounds
+L.imageOverlay('map.png', bounds).addTo(map);
   minZoom: 0,
   maxZoom: 6,
   noWrap:  true,
