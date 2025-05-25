@@ -1,47 +1,47 @@
-// 🍃 0) Sanity check
-console.log("app.js running");
+// 🍃 Debug
+console.log("🍃 app.js loaded");
 
-// 1) Constants for your map
+// 1) Your map image’s pixel dimensions
 const imgWidth  = 11000;
 const imgHeight = 11000;
 const maxZoom   = 6;
-// center of your image in [lat, lng] = [y, x]
-const center    = [imgHeight/2, imgWidth/2];
 
-// 2) Create the map & set its initial view
-//    - CRS.Simple treats our image as a flat plane
-//    - minZoom/maxZoom restrict zoom levels
+// 2) Define the “world” bounds in Leaflet lat/lng space
+//    (since CRS.Simple is used, lat=y and lng=x in pixel units)
+const bounds = L.latLngBounds(
+  [0,         0        ],  // southwest corner (y=0, x=0)
+  [imgHeight, imgWidth]   // northeast corner (y=11000, x=11000)
+);
+console.log("📐 bounds:", bounds);
+
+// 3) Initialize the map and fit to those bounds
 const map = L.map('map', {
   crs:       L.CRS.Simple,
   minZoom:   0,
   maxZoom:   maxZoom,
   zoomControl: true
-}).setView(center, 0);
+}).fitBounds(bounds);
 
-console.log("Map initialized at", center, "zoom 0");
+console.log("🗺️ map initialized & fit to bounds");
 
-// 3) Add your TMS tile layer
-//    - `tms: true` flips the Y so it matches your `raster` profile
-//    - `noWrap: true` prevents infinite world wrapping
-//    - `continuousWorld: false` confines to our single image
+// 4) Add your TMS tiles
+//    - `tms: true` flips Y to match your raster’s bottom-left origin
+//    - `bounds` ensures Leaflet never requests tiles outside this box
 L.tileLayer('tiles/{z}/{x}/{y}.png', {
-  tms:             true,
-  noWrap:          true,
-  continuousWorld: false,
-  minZoom:         0,
-  maxZoom:         maxZoom,
-  errorTileUrl:    ''   // blank tile instead of 404
+  tms:          true,
+  noWrap:       true,
+  bounds:       bounds,
+  minZoom:      0,
+  maxZoom:      maxZoom,
+  errorTileUrl: ''    // blank instead of 404
 }).addTo(map);
 
-console.log("TileLayer added");
+console.log("🖼️ tileLayer added");
 
-// 4) Optionally, lock panning to the image bounds so you never drag off-map
-const southWest = map.unproject([0, imgHeight], maxZoom);
-const northEast = map.unproject([imgWidth, 0],  maxZoom);
-map.setMaxBounds([southWest, northEast]);
+// 5) (Optional) Lock panning to the image
+map.setMaxBounds(bounds);
+console.log("🔒 panning locked to bounds");
 
-// 5) Debug events: watch tile loads/fails and view changes
-map.on('tileload',   (e) => console.log("✅ tileload", e.tile.src));
-map.on('tileerror',  (e) => console.warn("❌ tileerror", e.tile.src));
-map.on('zoomend',    ()  => console.log("Zoom →", map.getZoom()));
-map.on('moveend',    ()  => console.log("Center →", map.getCenter()));
+// 6) Debug tile‐load events
+map.on('tileload',  e => console.log("✅ tileload:",  e.tile.src));
+map.on('tileerror', e => console.warn("❌ tileerror:", e.tile.src));
