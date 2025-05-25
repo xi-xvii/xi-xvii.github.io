@@ -1,45 +1,37 @@
-// 🍃 Quick debug to confirm we’re running the right file
-console.log("▶️ app.js running");
+// 1) Quick debug
+console.log("▶️ app.js loaded");
 
-// 1) Your map image’s dimensions and max zoom
-const imgW = 11000;
-const imgH = 11000;
-const maxZ = 6;
+// 2) Your image’s dimensions & zoom range
+const imgW  = 11000;
+const imgH  = 11000;
+const maxZ  = 6;
 
-// 2) Compute the image center in [lat, lng] = [y, x]
-const center = [imgH / 2, imgW / 2];
+// 3) Center of the image (lat=y, lng=x)
+const center = [imgH/2, imgW/2];
 
-// 3) Initialize the map (flat CRS) and set initial view
+// 4) Make the map in flat CRS, set its initial view
 const map = L.map('map', {
-  crs:        L.CRS.Simple,
-  minZoom:    0,
-  maxZoom:    maxZ,
-  zoomControl: true
+  crs:       L.CRS.Simple,
+  minZoom:   0,
+  maxZoom:   maxZ
 }).setView(center, 0);
 
-console.log("🗺️ Map initialized at", center, "zoom 0");
+console.log("🗺 map initialized at", center);
 
-// 4) Add your TMS-numbered tiles
+// 5) Add your XYZ tiles (no TMS!)
 L.tileLayer('tiles/{z}/{x}/{y}.png', {
-  tms:             true,   // flip Y to match bottom-left origin
-  noWrap:          true,
-  continuousWorld: false,
-  minZoom:         0,
-  maxZoom:         maxZ,
-  errorTileUrl:    ''      // blank tile instead of 404
+  minZoom:       0,
+  maxZoom:       maxZ,
+  noWrap:        true,
+  continuousWorld:false,
+  errorTileUrl:  ''   // blank instead of 404
 }).addTo(map);
 
-console.log("🖼️ TileLayer added");
+console.log("🖼 tileLayer added");
 
-// 5) Lock panning to the image bounds
-const southWest = map.unproject([0,    imgH], maxZ);
-const northEast = map.unproject([imgW, 0   ], maxZ);
-map.setMaxBounds([southWest, northEast]);
+// 6) Lock panning to the bounds of the image
+const sw = map.unproject([  0, imgH ], maxZ);
+const ne = map.unproject([imgW,   0 ], maxZ);
+map.setMaxBounds([sw, ne]);
 
-console.log("🔒 Panning locked to bounds");
-
-// 6) Optional: watch tile load/fail events
-map.on('tileload',   e => console.log("✅ tileload",   e.tile.src));
-map.on('tileerror',  e => console.warn("❌ tileerror",  e.tile.src));
-map.on('zoomend',    ()  => console.log("🔍 Zoom →",     map.getZoom()));
-map.on('moveend',    ()  => console.log("📍 Center →",   map.getCenter()));
+console.log("🔒 panning locked");
