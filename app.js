@@ -1,71 +1,46 @@
-// ========== CONFIGURATION ==========
-const imgWidth    = 11000;            // your image width in px
-const imgHeight   = 11000;            // your image height in px
-const tileSize    = 256;              // standard tile size
-const maxNativeZ  = 6;                // the max zoom level you generated
+// 1) Define your image’s pixel size and bounds as a LatLngBounds
+const imgWidth  = 11000;
+const imgHeight = 11000;
+const bounds    = L.latLngBounds([0,     0     ], 
+                                 [imgHeight, imgWidth]);
 
-// compute how many tiles span the image at each axis
-const tileCountX  = Math.ceil(imgWidth  / tileSize);
-const tileCountY  = Math.ceil(imgHeight / tileSize);
-
-// define the full image bounds in map coordinates ([lat, lng] = [y, x])
-const imageBounds = L.latLngBounds([0,      0     ], 
-                                   [imgHeight, imgWidth]);
-
-// ========== INITIALIZE MAP ==========
+// 2) Init the map with those bounds and your zoom range
 const map = L.map('map', {
   crs: L.CRS.Simple,
   minZoom: 0,
-  maxZoom: maxNativeZ,
+  maxZoom: 6,
+  zoomSnap:  1,
+  zoomDelta: 1,
   zoomControl: true,
-  zoomSnap:    1,      // restrict to integer zooms
-  zoomDelta:   1,
-  maxBounds:     imageBounds,
-  maxBoundsViscosity: 1.0,  // “stick” to the image
+
+  // clamp panning/zooming so the view never drifts outside your image
+  maxBounds: bounds,
+  maxBoundsViscosity: 1.0,
+
+  // turn off animations for best perf
   zoomAnimation:       false,
   fadeAnimation:       false,
   markerZoomAnimation: false,
   inertia:             false
 });
 
-// ========== TILE LAYER ==========
-L.tileLayer(undefined, {
-  tileSize: tileSize,
-  noWrap:   true,
-  bounds:   imageBounds,
-  minZoom:  0,
-  maxZoom:  maxNativeZ,
-
-  // custom createTile: skip any tile coords outside [0..tileCount-1]
-  createTile: function(coords, done) {
-    const { x, y, z } = coords;
-    // if x or y is negative or beyond your computed counts, return empty
-    if (
-      z > maxNativeZ ||
-      x < 0      || x >= tileCountX ||
-      y < 0      || y >= tileCountY
-    ) {
-      const empty = document.createElement('div');
-      done(null, empty);
-      return empty;
-    }
-    // else create an <img> pointing at your real tile
-    const img = document.createElement('img');
-    img.src = `tiles/${z}/${x}/${y}.png`;
-    img.alt = '';
-    img.onload  = () => done(null, img);
-    img.onerror = () => done(null, img);
-    return img;
-  }
+// 3) Add a standard tileLayer that only loads inside your bounds
+L.tileLayer('tiles/{z}/{x}/{y}.png', {
+  tms:       true,          // match GDAL’s TMS output
+  noWrap:    true,          // don’t repeat outside the image
+  bounds:    bounds,        // only fetch tiles intersecting these coords
+  minZoom:   0,
+  maxZoom:   6,
+  errorTileUrl: ''          // blank image for any truly missing tiles
 }).addTo(map);
 
-// ========== FIT BOUNDS ==========
-map.fitBounds(imageBounds);
+// 4) Zoom/pan so the full map is visible
+map.fitBounds(bounds);
 
-// ========== YOUR MARKERS ==========
+// 5) (Re-)add your markers as before
 L.marker([600, 800]).addTo(map).bindPopup(`
   <h3>Location Alpha</h3>
-  <img src="photos/alpha.jpg" width="200" alt="Alpha Photo"><br>
+  <img src="photos/alpha.jpg" width="200"><br>
   <video width="240" controls>
     <source src="videos/alpha.mp4" type="video/mp4">
     Your browser doesn't support video.
