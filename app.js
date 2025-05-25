@@ -11,7 +11,7 @@ const imgWidth = 11000;
 const imgHeight = 11000;
 
 // 3) Define map bounds in pixel coordinates [y, x]
-const bounds = [[11000, 11000], [imgHeight, imgWidth]];
+const bounds = [[0, 0], [imgHeight, imgWidth]];
 
 // 4) Add the image overlay
 L.imageOverlay('map.png', bounds).addTo(map);
