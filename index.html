@@ -3,26 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <title>GTA VI Map</title>
-
-  <!-- Leaflet CSS (no integrity/crossorigin) -->
+  <!-- Leaflet CSS -->
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
   />
-
   <style>
-    html, body { margin:0; height:100%; }
-    #map { width:100%; height:100%; }
+    html, body { margin: 0; height: 100%; }
+    #map { width: 100%; height: 100%; }
+
+    /* optional: crisp pixel tiles instead of blurry */
+    .leaflet-tile {
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      image-rendering: -moz-crisp-edges;
+      -ms-interpolation-mode: nearest-neighbor;
+    }
   </style>
 </head>
 <body>
   <div id="map"></div>
 
-  <!-- Leaflet JS (no integrity/crossorigin) -->
-  <script
-    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-  ></script>
-
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <!-- Your map logic -->
   <script src="app.js"></script>
 </body>

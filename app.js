@@ -1,9 +1,9 @@
-// 1) Image dimensions and bounds
+// 1) Image dimensions & map bounds
 const imgWidth  = 11000;
 const imgHeight = 11000;
 const bounds    = L.latLngBounds([0, 0], [imgHeight, imgWidth]);
 
-// 2) Initialize the map, clamped to those bounds
+// 2) Initialize the map
 const map = L.map('map', {
   crs: L.CRS.Simple,
   minZoom: 0,
@@ -19,45 +19,24 @@ const map = L.map('map', {
   inertia:             false
 });
 
-// 3) Use a GridLayer instead of TileLayer
-// TEMP: overlay the whole PNG to verify map & bounds
-L.imageOverlay('map.png', bounds).addTo(map);
-  minZoom: 0,
-  maxZoom: 6,
-  noWrap:  true,
-  bounds:  bounds,
-
-  createTile: function(coords, done) {
-    // coords = { x, y, z }
-    const { x, y, z } = coords;
-    // if outside your computed grid, return an empty div
-    const maxX = Math.ceil(imgWidth  / 256) - 1;
-    const maxY = Math.ceil(imgHeight / 256) - 1;
-    if (x < 0 || x > maxX || y < 0 || y > maxY) {
-      const empty = document.createElement('div');
-      done(null, empty);
-      return empty;
-    }
-    // otherwise return an <img> pointing at the real tile
-    const img = document.createElement('img');
-    img.src = `tiles/${z}/${x}/${y}.png`;
-    img.alt = '';
-    img.onload  = () => done(null, img);
-    img.onerror = () => done(null, img);
-    return img;
-  }
+// 3) Load your pre-generated tiles (0–6)  
+L.tileLayer('tiles/{z}/{x}/{y}.png', {
+  noWrap:      true,
+  bounds:      bounds,
+  minZoom:     0,
+  maxZoom:     6,
+  errorTileUrl: ''   // blank instead of 404
 }).addTo(map);
 
-// 4) Fit the full map in view
+// 4) Fit the view to show the entire map
 map.fitBounds(bounds);
 
-// 5) Re-add your markers
-L.marker([600, 800])
- .addTo(map)
- .bindPopup(`
-   <h3>Location Alpha</h3>
-   <img src="photos/alpha.jpg" width="200"><br>
-   <video width="240" controls>
-     <source src="videos/alpha.mp4" type="video/mp4">
-   </video>
- `);
+// 5) Add any markers/popups
+L.marker([600, 800]).addTo(map).bindPopup(`
+  <h3>Location Alpha</h3>
+  <img src="photos/alpha.jpg" width="200" alt="Alpha Photo"><br>
+  <video width="240" controls>
+    <source src="videos/alpha.mp4" type="video/mp4">
+    Your browser doesn't support video.
+  </video>
+`);
