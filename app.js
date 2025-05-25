@@ -1,28 +1,32 @@
-// 🍃 Debug
-console.log("app.js running");
+// Debug
+console.log("▶️ app.js running");
 
-// 1) Image size & initial center
-const imgWidth  = 11000;
-const imgHeight = 11000;
-// Center the view on the middle of your image:
-const startLatLng = [imgHeight/2, imgWidth/2];  
-
-// 2) Make the map, set its view *first*
+// 1) Initialize the map at a *known* tile coordinate.
+//    We want to load exactly tile Z=0, X=0, Y=0 from your tiles folder.
 const map = L.map('map', {
   crs: L.CRS.Simple,
   minZoom: 0,
-  maxZoom: 6
-}).setView(startLatLng, 0);
+  maxZoom: 0,  // LOCK to zoom level 0 for this test
+}).setView([0, 0], 0);
 
-console.log("Map initialized at", startLatLng);
+console.log("🗺️ map initialized at [0,0], zoom 0");
 
-// 3) Add your tile layer (TMS = true flips Y for you)
-L.tileLayer('tiles/{z}/{x}/{y}.png', {
-  tms:       true,
-  noWrap:    true,
-  minZoom:   0,
-  maxZoom:   6,
-  errorTileUrl: ''  // empty tile instead of 404
+// 2) Add a single-tile layer pointing at 0/0/0.png
+L.tileLayer('tiles/0/0/0.png', {
+  tileSize: 256,
+  noWrap:   true,
+  bounds:   [[0,0], [256,256]],  // make a tiny bounds so Leaflet thinks the map is just this tile
+  minZoom:  0,
+  maxZoom:  0,
+  errorTileUrl: ''  // blank if missing
 }).addTo(map);
 
-console.log("Tile layer added");
+console.log("🖼️ tileLayer added for tiles/0/0/0.png");
+
+// 3) Watch for tile requests and errors
+map.on('tileerror', (e) => {
+  console.error("❌ tileerror loading:", e.tile.src);
+});
+map.on('tileload', (e) => {
+  console.log("✅ tileload:", e.tile.src);
+});
