@@ -2,31 +2,26 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>GTA VI Map</title>
-  <!-- Leaflet CSS -->
+  <title>GTA VI Tiled Map</title>
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    crossorigin=""
   />
   <style>
     html, body { margin:0; height:100%; }
     #map { width:100%; height:100%; }
-
-    /* crisp, pixel-perfect tiles */
-    .leaflet-tile {
-      image-rendering: pixelated;
-      image-rendering: crisp-edges;
-      image-rendering: -moz-crisp-edges;
-      -ms-interpolation-mode: nearest-neighbor;
-    }
   </style>
 </head>
 <body>
   <div id="map"></div>
 
   <!-- Leaflet JS -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <!-- Your map logic -->
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    crossorigin=""
+  ></script>
+  <!-- Your map code -->
   <script src="app.js"></script>
 </body>
 </html>
