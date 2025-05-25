@@ -4,7 +4,7 @@ console.log("▶️ app.js loaded");
 // 2) Your image’s dimensions & zoom range
 const imgW  = 11000;
 const imgH  = 11000;
-const maxZ  = 6;
+const maxZ  = 8;
 
 // 3) Center of the image (lat=y, lng=x)
 const center = [imgH/2, imgW/2];
@@ -14,7 +14,7 @@ const map = L.map('map', {
   crs:       L.CRS.Simple,
   minZoom:   0,
   maxZoom:   maxZ
-}).setView(center, 2);
+}).setView(center, 0);
 
 console.log("🗺 map initialized at", center);
 
