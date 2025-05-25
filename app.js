@@ -1,47 +1,48 @@
 // 🍃 Debug
-console.log("🍃 app.js loaded");
+console.log("app.js running");
 
-// 1) Your map image’s pixel dimensions
-const imgWidth  = 11000;
-const imgHeight = 11000;
-const maxZoom   = 6;
+// 1) Your image’s size
+const imgW = 11000;
+const imgH = 11000;
+const maxZ = 6;
 
-// 2) Define the “world” bounds in Leaflet lat/lng space
-//    (since CRS.Simple is used, lat=y and lng=x in pixel units)
+// 2) Define the map “world” in pixel-units (lat=y, lng=x)
 const bounds = L.latLngBounds(
-  [0,         0        ],  // southwest corner (y=0, x=0)
-  [imgHeight, imgWidth]   // northeast corner (y=11000, x=11000)
+  [0,    0   ],   // SW corner: bottom-left of image
+  [imgH, imgW]    // NE corner: top-right of image
 );
-console.log("📐 bounds:", bounds);
+console.log("📐 bounds set to", bounds);
 
-// 3) Initialize the map and fit to those bounds
+// 3) Initialize the map & fit to bounds
 const map = L.map('map', {
   crs:       L.CRS.Simple,
   minZoom:   0,
-  maxZoom:   maxZoom,
+  maxZoom:   maxZ,
   zoomControl: true
 }).fitBounds(bounds);
+console.log("🗺 map initialized");
 
-console.log("🗺️ map initialized & fit to bounds");
-
-// 4) Add your TMS tiles
-//    - `tms: true` flips Y to match your raster’s bottom-left origin
-//    - `bounds` ensures Leaflet never requests tiles outside this box
+// 4) Add your tiles with the default numbering (tms: false)
+//    Leaflet will request only 0 ≤ x ≤ ceil(imgW/256)-1
+//                       and 0 ≤ y ≤ ceil(imgH/256)-1
 L.tileLayer('tiles/{z}/{x}/{y}.png', {
-  tms:          true,
+  // no tms:true here!
   noWrap:       true,
+  continuousWorld: false,
   bounds:       bounds,
+  tileSize:     256,
   minZoom:      0,
-  maxZoom:      maxZoom,
-  errorTileUrl: ''    // blank instead of 404
+  maxZoom:      maxZ,
+  errorTileUrl: ''   // blank instead of 404
 }).addTo(map);
+console.log("🖼 tileLayer added");
 
-console.log("🖼️ tileLayer added");
-
-// 5) (Optional) Lock panning to the image
+// 5) Optional: lock panning to those bounds
 map.setMaxBounds(bounds);
-console.log("🔒 panning locked to bounds");
+console.log("🔒 panning locked");
 
-// 6) Debug tile‐load events
-map.on('tileload',  e => console.log("✅ tileload:",  e.tile.src));
-map.on('tileerror', e => console.warn("❌ tileerror:", e.tile.src));
+// 6) Debug loading events
+map.on('tileload',  e => console.log("✅ tileload",  e.tile.src));
+map.on('tileerror', e => console.warn("❌ tileerror", e.tile.src));
+map.on('zoomend',   ()  => console.log("🔍 zoom to", map.getZoom()));
+map.on('moveend',   ()  => console.log("📍 center at", map.getCenter()));
