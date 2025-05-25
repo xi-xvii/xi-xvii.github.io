@@ -1,33 +1,30 @@
-// 1) Image dimensions and max zoom
-const imgW    = 11000;
-const imgH    = 11000;
-const maxZoom = 6;
+console.log("▶️ app.js running");
 
-// 2) Custom CRS that doesn’t flip Y
-const myCRS = Object.assign({}, L.CRS.Simple, {
-  transformation: new L.Transformation(1, 0, 1, 0)
-});
+// 1) Map dimensions & zoom range
+const W = 11000, H = 11000, maxZ = 6;
+// center of the image in [lat, lng]
+const center = [H/2, W/2];
 
-// 3) Define your image bounds in “pixel” units (lat=y, lng=x)
-const imageBounds = [[0, 0], [imgH, imgW]];
-
-// 4) Init the map with that CRS and fit to bounds
+// 2) Create the map
 const map = L.map('map', {
-  crs:       myCRS,
-  minZoom:   0,
-  maxZoom:   maxZoom,
-  zoomControl: true
-}).fitBounds(imageBounds);
+  crs: L.CRS.Simple,
+  minZoom: 0,
+  maxZoom: maxZ
+}).setView(center, 0);
+console.log("🗺️ map initialized at", center);
 
-// 5) Add your tiles via standard XYZ (no negatives!)
+// 3) Add a simple XYZ tile layer
 L.tileLayer('tiles/{z}/{x}/{y}.png', {
-  noWrap:         true,
-  continuousWorld:false,
-  bounds:         imageBounds,
-  minZoom:        0,
-  maxZoom:        maxZoom,
-  errorTileUrl:   ''   // blank instead of 404s
+  noWrap:          true,
+  continuousWorld: false,
+  minZoom:         0,
+  maxZoom:         maxZ,
+  errorTileUrl:    ''  // blank instead of 404
 }).addTo(map);
+console.log("🖼️ tileLayer added");
 
-// 6) (Optional) lock panning so you never drift outside
-map.setMaxBounds(imageBounds);
+// 4) Lock panning to the image bounds
+const southWest = map.unproject([0,  H], maxZ);
+const northEast = map.unproject([W,  0], maxZ);
+map.setMaxBounds([southWest, northEast]);
+console.log("🔒 panning locked");
