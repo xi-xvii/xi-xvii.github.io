@@ -1,48 +1,42 @@
-// 1) Define your image’s pixel size and bounds as a LatLngBounds
+// 1) Define image size & bounds
 const imgWidth  = 11000;
 const imgHeight = 11000;
-const bounds    = L.latLngBounds([0,     0     ], 
-                                 [imgHeight, imgWidth]);
+const bounds    = L.latLngBounds([0, 0], [imgHeight, imgWidth]);
 
-// 2) Init the map with those bounds and your zoom range
+// 2) Initialize map
 const map = L.map('map', {
   crs: L.CRS.Simple,
   minZoom: 0,
   maxZoom: 6,
-  zoomSnap:  1,
+  zoomSnap: 1,
   zoomDelta: 1,
   zoomControl: true,
-
-  // clamp panning/zooming so the view never drifts outside your image
   maxBounds: bounds,
   maxBoundsViscosity: 1.0,
-
-  // turn off animations for best perf
   zoomAnimation:       false,
   fadeAnimation:       false,
   markerZoomAnimation: false,
   inertia:             false
 });
 
-// 3) Add a standard tileLayer that only loads inside your bounds
+// 3) Add your tile layer — make sure the URL template is the *first* argument!
 L.tileLayer('tiles/{z}/{x}/{y}.png', {
-  tms:       true,          // match GDAL’s TMS output
-  noWrap:    true,          // don’t repeat outside the image
-  bounds:    bounds,        // only fetch tiles intersecting these coords
+  tms:       true,
+  noWrap:    true,
+  bounds:    bounds,
   minZoom:   0,
   maxZoom:   6,
-  errorTileUrl: ''          // blank image for any truly missing tiles
+  errorTileUrl: ''
 }).addTo(map);
 
-// 4) Zoom/pan so the full map is visible
+// 4) Fit to the full image
 map.fitBounds(bounds);
 
-// 5) (Re-)add your markers as before
+// 5) Re-add any markers/popups
 L.marker([600, 800]).addTo(map).bindPopup(`
   <h3>Location Alpha</h3>
   <img src="photos/alpha.jpg" width="200"><br>
   <video width="240" controls>
     <source src="videos/alpha.mp4" type="video/mp4">
-    Your browser doesn't support video.
   </video>
 `);
