@@ -1,37 +1,38 @@
-// 1) Quick debug
+// 1) Debug
 console.log("▶️ app.js loaded");
 
 // 2) Your image’s dimensions & zoom range
 const imgW  = 11000;
 const imgH  = 11000;
-const maxZ  = 8;
-
-// 3) Center of the image (lat=y, lng=x)
+const maxZ  = 8;        // assuming you bumped to 8
 const center = [imgH/2, imgW/2];
 
-// 4) Make the map in flat CRS, set its initial view
+// 3) Make the map in flat CRS and set initial view
 const map = L.map('map', {
   crs:       L.CRS.Simple,
   minZoom:   0,
-  maxZoom:   maxZ
-}).setView(center, 0);
+  maxZoom:   maxZ,
+  zoomControl: true
+}).setView(center, 2);   // start zoomed in two levels
 
-console.log("🗺 map initialized at", center);
+console.log("🗺️ map initialized at", center);
 
-// 5) Add your XYZ tiles (no TMS!)
+// 4) Define your bounds once and reuse
+const bounds = L.latLngBounds([0, 0], [imgH, imgW]);
+
+// 5) Add your XYZ tiles
 L.tileLayer('tiles/{z}/{x}/{y}.png', {
-  minZoom:       0,
-  maxZoom:       maxZ,
-  noWrap:        true,
+  minZoom:        0,
+  maxZoom:        maxZ,
+  noWrap:         true,
   continuousWorld:false,
-  errorTileUrl:  ''   // blank instead of 404
+  errorTileUrl:   ''
 }).addTo(map);
 
-console.log("🖼 tileLayer added");
+console.log("🖼️ tileLayer added");
 
-// 6) Lock panning to the bounds of the image
-const sw = map.unproject([  0, imgH ], maxZ);
-const ne = map.unproject([imgW,   0 ], maxZ);
-map.setMaxBounds([sw, ne]);
+// 6) Fit *and lock* the map to those exact pixel-bounds
+map.fitBounds(bounds);
+map.setMaxBounds(bounds);
 
-console.log("🔒 panning locked");
+console.log("🔒 panning locked to image bounds");
