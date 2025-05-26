@@ -4,7 +4,7 @@ console.log("▶️ app.js loaded");
 // 2) Your image’s dimensions & zoom range
 const imgW  = 11000;
 const imgH  = 11000;
-const maxZ  = 8;
+const maxZ  = 6;
 
 // 3) Center of the image (lat=y, lng=x)
 const center = [imgH/2, imgW/2];
@@ -29,9 +29,3 @@ L.tileLayer('tiles/{z}/{x}/{y}.png', {
 
 console.log("🖼 tileLayer added");
 
-// 6) Lock panning to the bounds of the image
-const sw = map.unproject([  0, imgH ], maxZ);
-const ne = map.unproject([imgW,   0 ], maxZ);
-map.setMaxBounds([sw, ne]);
-
-console.log("🔒 panning locked");
