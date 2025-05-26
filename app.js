@@ -1,42 +1,37 @@
-// 1) Debug
+// 1) Quick debug
 console.log("▶️ app.js loaded");
 
-// 2) Image & zoom config
-const imgW = 11000;
-const imgH = 11000;
-const maxZ = 8;                 // or whatever your highest zoom now is
+// 2) Your image’s dimensions & zoom range
+const imgW  = 11000;
+const imgH  = 11000;
+const maxZ  = 6;
 
-// 3) Compute the pixel‐bounds and center
-const bounds = L.latLngBounds([0, 0], [imgH, imgW]);
-const center = bounds.getCenter();
+// 3) Center of the image (lat=y, lng=x)
+const center = [imgH/2, imgW/2];
 
-// 4) Initialize map in flat CRS, fit to bounds
+// 4) Make the map in flat CRS, set its initial view
 const map = L.map('map', {
-  crs:        L.CRS.Simple,
-  minZoom:    0,
-  maxZoom:    maxZ,
-  zoomControl:true
-});
-// Fit full image into view
-map.fitBounds(bounds);
-console.log("🗺️ map fit to bounds:", bounds);
+  crs:       L.CRS.Simple,
+  minZoom:   0,
+  maxZoom:   maxZ
+}).setView(center, 0);
 
-// 5) Add XYZ tiles
+console.log("🗺 map initialized at", center);
+
+// 5) Add your XYZ tiles (no TMS!)
 L.tileLayer('tiles/{z}/{x}/{y}.png', {
-  noWrap:          true,
-  continuousWorld: false,
-  minZoom:         0,
-  maxZoom:         maxZ,
-  errorTileUrl:    ''
+  minZoom:       0,
+  maxZoom:       maxZ,
+  noWrap:        true,
+  continuousWorld:false,
+  errorTileUrl:  ''   // blank instead of 404
 }).addTo(map);
-console.log("🖼️ tileLayer added");
 
-// 6) Now zoom in two levels (you can pan freely)
-map.setView(center, 2);
-console.log("🔍 zoomed in to level 2 at", center);
+console.log("🖼 tileLayer added");
 
-// 7) Debug events
-map.on('tileload',   e => console.log("✅ tileload",   e.tile.src));
-map.on('tileerror',  e => console.warn("❌ tileerror",  e.tile.src));
-map.on('zoomend',    ()  => console.log("🔄 zoom →",     map.getZoom()));
-map.on('moveend',    ()  => console.log("➡️ center →",   map.getCenter()));
+// 6) Lock panning to the bounds of the image
+const sw = map.unproject([  0, imgH ], maxZ);
+const ne = map.unproject([imgW,   0 ], maxZ);
+map.setMaxBounds([sw, ne]);
+
+console.log("🔒 panning locked");
