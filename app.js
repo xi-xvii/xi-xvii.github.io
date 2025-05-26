@@ -1,38 +1,26 @@
-// 1) Debug
+// 1) Confirm script is running
 console.log("▶️ app.js loaded");
 
-// 2) Image dimensions & zoom range
-const imgW = 11000, imgH = 11000, maxZ = 6;
-
-// 3) Compute the flat “world” bounds in pixel units
-const bounds = L.latLngBounds([0, 0], [imgH, imgW]);
-const center = bounds.getCenter();
-
-// 4) Initialize the map in CRS.Simple & immediately fit to bounds
+// 2) Initialize a map in CRS.Simple, zoom locked to 0
 const map = L.map('map', {
-  crs:          L.CRS.Simple,
-  minZoom:      0,
-  maxZoom:      maxZ,
-  zoomControl:  true,
-  // this makes Leaflet clamp tile requests to only the area inside `bounds`
-  maxBounds:    bounds,
-  maxBoundsViscosity: 1.0
-}).fitBounds(bounds);
+  crs:     L.CRS.Simple,
+  minZoom: 0,
+  maxZoom: 0,
+  zoomControl: false
+}).setView([0, 0], 0);
 
-console.log("🗺️ map initialized & fit to bounds:", bounds);
+console.log("🗺️ map initialized at [0,0], zoom 0");
 
-// 5) Add your XYZ tiles, *with* the same bounds option
-L.tileLayer('tiles/{z}/{x}/{y}.png', {
-  minZoom:         0,
-  maxZoom:         maxZ,
-  noWrap:          true,
+// 3) Add a single-tile layer pointing at 0/0/0.png
+L.tileLayer('tiles/0/0/0.png', {
+  tileSize:     256,
+  noWrap:       true,
   continuousWorld: false,
-  bounds:          bounds,
-  errorTileUrl:    ''    // blank instead of 404
+  errorTileUrl: ''  // blank instead of 404
 }).addTo(map);
 
-console.log("🖼️ tileLayer added");
+console.log("🖼️ tileLayer added for tiles/0/0/0.png");
 
-// 6) (Optional) start zoomed in two levels
-map.setView(center, 2);
-console.log("🔍 zoomed in to level 2 at", center);
+// 4) Watch for load/fail events
+map.on('tileload',  e => console.log("✅ tileload:",  e.tile.src));
+map.on('tileerror', e => console.error("❌ tileerror:", e.tile.src));
