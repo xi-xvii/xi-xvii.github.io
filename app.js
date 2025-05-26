@@ -1,40 +1,42 @@
 // 1) Debug
 console.log("▶️ app.js loaded");
 
-// 2) Your image’s dimensions & zoom range
-const imgW  = 11000;
-const imgH  = 11000;
-const maxZ  = 8;           // assuming you bumped to level 8
-const center = [imgH/2, imgW/2];
+// 2) Image & zoom config
+const imgW = 11000;
+const imgH = 11000;
+const maxZ = 8;                 // or whatever your highest zoom now is
 
-// 3) Make the map in flat CRS and set initial view
+// 3) Compute the pixel‐bounds and center
+const bounds = L.latLngBounds([0, 0], [imgH, imgW]);
+const center = bounds.getCenter();
+
+// 4) Initialize map in flat CRS, fit to bounds
 const map = L.map('map', {
   crs:        L.CRS.Simple,
   minZoom:    0,
   maxZoom:    maxZ,
   zoomControl:true
-}).setView(center, 2);      // start zoomed in two levels
+});
+// Fit full image into view
+map.fitBounds(bounds);
+console.log("🗺️ map fit to bounds:", bounds);
 
-console.log("🗺️ map initialized at", center);
-
-// 4) Add your XYZ tiles
+// 5) Add XYZ tiles
 L.tileLayer('tiles/{z}/{x}/{y}.png', {
-  minZoom:         0,
-  maxZoom:         maxZ,
   noWrap:          true,
   continuousWorld: false,
+  minZoom:         0,
+  maxZoom:         maxZ,
   errorTileUrl:    ''
 }).addTo(map);
-
 console.log("🖼️ tileLayer added");
 
-// 5) (Removed) pan lock so you can move freely
-// map.setMaxBounds(L.latLngBounds([0, 0], [imgH, imgW]));
+// 6) Now zoom in two levels (you can pan freely)
+map.setView(center, 2);
+console.log("🔍 zoomed in to level 2 at", center);
 
-console.log("🔓 pan lock removed — you can now pan anywhere");
-
-// 6) Optional debug events
+// 7) Debug events
 map.on('tileload',   e => console.log("✅ tileload",   e.tile.src));
 map.on('tileerror',  e => console.warn("❌ tileerror",  e.tile.src));
-map.on('zoomend',    ()  => console.log("🔍 zoom →",     map.getZoom()));
-map.on('moveend',    ()  => console.log("📍 center →",   map.getCenter()));
+map.on('zoomend',    ()  => console.log("🔄 zoom →",     map.getZoom()));
+map.on('moveend',    ()  => console.log("➡️ center →",   map.getCenter()));
