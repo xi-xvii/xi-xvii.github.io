@@ -4,7 +4,7 @@ console.log("▶️ app.js loaded");
 // 2) Your image’s dimensions & zoom range
 const imgW  = 11000;
 const imgH  = 11000;
-const maxZ  = 6;
+const maxZ  = 8;
 
 // 3) Center of the image (lat=y, lng=x)
 const center = [imgH/2, imgW/2];
