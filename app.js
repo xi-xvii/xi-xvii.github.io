@@ -13,7 +13,7 @@ const map = L.map('map', {
   minZoom:   0,
   maxZoom:   maxZ,
   zoomControl: true
-}).setView(center, 2);   // start zoomed in two levels
+}).setView(center, 0);   // start zoomed in two levels
 
 console.log("🗺️ map initialized at", center);
 
