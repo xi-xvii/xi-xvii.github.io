@@ -1,31 +1,39 @@
-// 1) Quick debug
+// 1) Debug
 console.log("▶️ app.js loaded");
 
-// 2) Your image’s dimensions & zoom range
-const imgW  = 11000;
-const imgH  = 11000;
-const maxZ  = 6;
+// 2) Image dimensions & zoom
+const imgW = 11000, imgH = 11000, maxZ = 6;
 
-// 3) Center of the image (lat=y, lng=x)
-const center = [imgH/2, imgW/2];
+// 3) Define the world‐coordinate bounds (pixel units)
+const bounds = L.latLngBounds([0, 0], [imgH, imgW]);
 
-// 4) Make the map in flat CRS, set its initial view
+// 4) Initialize the map and immediately fit to those bounds
 const map = L.map('map', {
-  crs:       L.CRS.Simple,
-  minZoom:   0,
-  maxZoom:   maxZ
-}).setView(center, 0);
+  crs:        L.CRS.Simple,
+  minZoom:    0,
+  maxZoom:    maxZ,
+  zoomControl:true,
+  noWrap:     true
+}).fitBounds(bounds);
 
-console.log("🗺 map initialized at", center);
+console.log("🗺️ map initialized & fit to bounds:", bounds);
 
-// 5) Add your XYZ tiles (no TMS!)
+// 5) Add your XYZ tile layer
 L.tileLayer('tiles/{z}/{x}/{y}.png', {
-  minZoom:       0,
-  maxZoom:       maxZ,
-  noWrap:        true,
+  minZoom:        0,
+  maxZoom:        maxZ,
   continuousWorld:false,
-  errorTileUrl:  ''   // blank instead of 404
+  errorTileUrl:   ''
 }).addTo(map);
 
-console.log("🖼 tileLayer added");
+console.log("🖼️ tileLayer added");
 
+// 6) (Optional) if you still want to start zoomed in two levels:
+map.setView(bounds.getCenter(), 2);
+console.log("🔍 zoomed in to level 2");
+
+// 7) Debug events
+map.on('tileload',   e => console.log("✅ tileload",   e.tile.src));
+map.on('tileerror',  e => console.warn("❌ tileerror",  e.tile.src));
+map.on('zoomend',    ()  => console.log("🔄 zoom →",     map.getZoom()));
+map.on('moveend',    ()  => console.log("📍 center →",   map.getCenter()));
