@@ -26,10 +26,10 @@ L.tileLayer('tiles/{z}/{x}/{y}.png', {
   bounds: bounds,
   errorTileUrl: '',
   getTileUrl: function (coords) {
-    const url = `tiles/${coords.z}/${coords.x}/${coords.y}.png`;
-    console.log("🧭 requesting tile:", url);
-    return url;
-  }
+  const url = `tiles/${coords.z}/${coords.x}/${coords.y}.png`;
+  console.log("✅ USING POSITIVE Y TILE URL:", url); // Unique log
+  return url;
+}
 }).addTo(map);
 
 console.log("🧱 tileLayer added");
