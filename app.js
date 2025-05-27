@@ -1,55 +1,37 @@
 // 🍃 Debug
 console.log("▶️ app.js loaded");
 
-// 1) Image & tile settings
-const imgW = 11000;
-const imgH = 11000;
+// 1) Define tile size and bounds of tile 0/0/0 manually
 const tileSize = 256;
-const maxZ = 7;
+const bounds = L.latLngBounds([0, 0], [tileSize, tileSize]);
 
-// 2) Define full bounds in image pixel units
-const bounds = L.latLngBounds([0, 0], [imgH, imgW]);
-
-// 3) Custom CRS that matches pixel units directly
-const myCRS = L.extend({}, L.CRS.Simple, {
-  transformation: new L.Transformation(1, 0, -1, 0), // flip Y to top-left origin
-  scale: function (zoom) {
-    return Math.pow(2, zoom);
-  }
-});
-
-// 4) Init map with pixel-accurate CRS
+// 2) Init map to view just this tile
 const map = L.map('map', {
-  crs: myCRS,
+  crs: L.CRS.Simple,
   minZoom: 0,
-  maxZoom: maxZ,
+  maxZoom: 0,
   zoomSnap: 1,
-  zoomDelta: 1,
   zoomControl: true
-}).setView([imgH / 2, imgW / 2], 5); // Start at zoom 5
+}).fitBounds(bounds);
 
-console.log("🗺️ map initialized & centered");
+console.log("🗺️ map initialized & zoom fixed");
 
-// 5) Add tile layer with flipped Y axis
+// 3) Add tile layer hardcoded to serve 0/0/0.png
 L.tileLayer('', {
+  tileSize: tileSize,
   noWrap: true,
   minZoom: 0,
-  maxZoom: maxZ,
-  tileSize: tileSize,
-  bounds: bounds,
-  errorTileUrl: '',
-
-  getTileUrl: function (coords) {
-    const yFlipped = Math.pow(2, coords.z) - coords.y - 1;
-    const url = `tiles/${coords.z}/${coords.x}/${yFlipped}.png`;
-    console.log("🧭 requesting tile:", url);
+  maxZoom: 0,
+  getTileUrl: function () {
+    const url = `tiles/0/0/0.png`;
+    console.log("🧭 forcing tile:", url);
     return url;
   }
 }).addTo(map);
 
-console.log("🧱 tileLayer added");
+console.log("🧱 forced tileLayer added");
 
-// 6) Debug tile loads
+// 4) Debug events
 map.on('tileloadstart', e => console.log("🌀 loading:", e.tile.src));
 map.on('tileload',     e => console.log("✅ loaded:", e.tile.src));
 map.on('tileerror',    e => console.warn("❌ error:", e.tile.src));
