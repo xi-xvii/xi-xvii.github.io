@@ -1,39 +1,12 @@
 console.log("▶️ map.js loaded");
 
-const imgW = 11000;
-const imgH = 11000;
-const tileSize = 256;
-const maxZ = 8;
+// 1) Initialize map and set view to London
+var map = L.map('map').setView([51.505, -0.09], 13);
+console.log("🗺️ map initialized at London");
 
-const bounds = L.latLngBounds([0, 0], [imgH, imgW]);
-
-const map = L.map('map', {
-  crs: L.CRS.Simple,
-  minZoom: 0,
-  maxZoom: maxZ,
-  zoomSnap: 1,
-  zoomDelta: 1,
-  zoomControl: true
-}).setView([imgH / 2, imgW / 2], 5);
-
-console.log("🗺️ map initialized");
-
-L.tileLayer('', {  // Important: use empty string to enable getTileUrl
-  tileSize: tileSize,
-  minZoom: 0,
-  maxZoom: maxZ,
-  noWrap: true,
-  bounds: bounds,
-  errorTileUrl: '',
-  getTileUrl: function (coords) {
-    const url = `tiles/${coords.z}/${coords.x}/${coords.y}.png`;
-    console.log("✅ USING POSITIVE Y TILE URL:", url);
-    return url;
-  }
+// 2) Add OpenStreetMap tile layer
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 19,
+  attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 }).addTo(map);
-
-console.log("🧱 tileLayer added");
-
-map.on('tileloadstart', e => console.log("🌀 loading:", e.tile.src));
-map.on('tileload',     e => console.log("✅ loaded:", e.tile.src));
-map.on('tileerror',    e => console.warn("❌ error:", e.tile.src));
+console.log("🧱 OSM tile layer added");
