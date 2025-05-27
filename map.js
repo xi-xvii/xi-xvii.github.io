@@ -1,28 +1,23 @@
 console.log("▶️ map.js loaded");
 
-const imgW = 11000;
-const imgH = 11000;
+// 1) One tile at zoom 0 is 256 x 256 px
 const tileSize = 256;
-const maxZ = 8;
-const nativeZ = 6; // max zoom level your image realistically covers
+const bounds = [[0, 0], [tileSize, tileSize]];
 
-const bounds = [[0, 0], [imgH, imgW]];
-
+// 2) Init map locked to zoom level 0
 const map = L.map('map', {
   crs: L.CRS.Simple,
   minZoom: 0,
-  maxZoom: maxZ,
-  zoomSnap: 1,
-  zoomDelta: 1
+  maxZoom: 0
 }).fitBounds(bounds);
 
-console.log("🗺️ map initialized and fit to bounds");
+console.log("🗺️ map initialized and fit to one-tile bounds");
 
+// 3) Force load tile 0/0/0
 L.tileLayer('', {
   tileSize: tileSize,
   minZoom: 0,
-  maxZoom: maxZ,
-  maxNativeZoom: nativeZ,
+  maxZoom: 0,
   noWrap: true,
   bounds: bounds,
   errorTileUrl: '',
