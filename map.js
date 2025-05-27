@@ -1,4 +1,4 @@
-console.log("▶️ app.js loaded");
+console.log("▶️ map.js loaded");
 
 const imgW = 11000;
 const imgH = 11000;
