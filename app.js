@@ -22,7 +22,7 @@ const map = L.map('map', {
 
 console.log("🗺️ map initialized & fit to bounds:", bounds);
 
-// 4) Add flipped-Y tile layer
+// 4) Add tile layer with Y flip and debug logging
 L.tileLayer('', {
   noWrap: true,
   minZoom: 0,
@@ -31,15 +31,17 @@ L.tileLayer('', {
   bounds: bounds,
   errorTileUrl: '',
 
-  // Flip Y since L.CRS.Simple starts at bottom-left
   getTileUrl: function (coords) {
     const yFlipped = Math.pow(2, coords.z) - coords.y - 1;
-    return `tiles/${coords.z}/${coords.x}/${yFlipped}.png`;
+    const url = `tiles/${coords.z}/${coords.x}/${yFlipped}.png`;
+    console.log("🧭 requesting tile:", url);
+    return url;
   }
 }).addTo(map);
 
 console.log("🧱 tileLayer added");
 
-// 5) Debugging
-map.on('tileload', e => console.log("✅", e.tile.src));
-map.on('tileerror', e => console.warn("❌", e.tile.src));
+// 5) Debug events
+map.on('tileloadstart', e => console.log("🌀 loading:", e.tile.src));
+map.on('tileload',     e => console.log("✅ loaded:", e.tile.src));
+map.on('tileerror',    e => console.warn("❌ error:", e.tile.src));
