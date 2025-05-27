@@ -18,7 +18,7 @@ const map = L.map('map', {
 
 console.log("🗺️ map initialized");
 
-L.tileLayer('tiles/{z}/{x}/{y}.png', {
+L.tileLayer('', {  // Important: use empty string to enable getTileUrl
   tileSize: tileSize,
   minZoom: 0,
   maxZoom: maxZ,
