@@ -5,7 +5,7 @@ console.log("▶️ app.js loaded");
 const imgW = 11000;
 const imgH = 11000;
 const tileSize = 256;
-const maxZ = 6;
+const maxZ = 8;
 
 // 2) Define map bounds (pixel coordinates)
 const bounds = L.latLngBounds([0, 0], [imgH, imgW]);
