@@ -10,7 +10,7 @@ const maxZ = 6;
 // 2) Define map bounds (pixel coordinates)
 const bounds = L.latLngBounds([0, 0], [imgH, imgW]);
 
-// 3) Initialize map
+// 3) Initialize map with manual zoom and center
 const map = L.map('map', {
   crs: L.CRS.Simple,
   minZoom: 0,
@@ -18,9 +18,13 @@ const map = L.map('map', {
   zoomSnap: 1,
   zoomDelta: 1,
   zoomControl: true
-}).fitBounds(bounds);
+});
 
-console.log("🗺️ map initialized & fit to bounds:", bounds);
+// Set zoom and center to force tile requests
+const initialZoom = 0;
+map.setView([imgH / 2, imgW / 2], initialZoom);
+
+console.log("🗺️ map initialized & centered at", [imgH / 2, imgW / 2]);
 
 // 4) Add tile layer with Y flip and debug logging
 L.tileLayer('', {
