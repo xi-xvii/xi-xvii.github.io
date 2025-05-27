@@ -1,36 +1,30 @@
 // 🍃 Debug
 console.log("▶️ app.js loaded");
 
-// 1) Image dimensions
-const imgW = 11000;
-const imgH = 11000;
+// 1) Tile and zoom settings
 const tileSize = 256;
-const maxZ = 8;
+const maxZ = 0;
 
-// 2) Define map bounds (pixel coordinates)
-const bounds = L.latLngBounds([0, 0], [imgH, imgW]);
+// 2) Bounds matching 1 tile at zoom level 0
+const bounds = L.latLngBounds([0, 0], [tileSize, tileSize]);
 
-// 3) Initialize map with manual zoom and center
+// 3) Init the map with zoom locked to 0
 const map = L.map('map', {
   crs: L.CRS.Simple,
   minZoom: 0,
-  maxZoom: maxZ,
+  maxZoom: 0,
   zoomSnap: 1,
   zoomDelta: 1,
   zoomControl: true
-});
+}).fitBounds(bounds);
 
-// Set zoom and center to force tile requests
-const initialZoom = 0;
-map.setView([imgH / 2, imgW / 2], initialZoom);
+console.log("🗺️ map initialized & zoom fixed at 0");
 
-console.log("🗺️ map initialized & centered at", [imgH / 2, imgW / 2]);
-
-// 4) Add tile layer with Y flip and debug logging
+// 4) Add tile layer for just that tile
 L.tileLayer('', {
   noWrap: true,
   minZoom: 0,
-  maxZoom: maxZ,
+  maxZoom: 0,
   tileSize: tileSize,
   bounds: bounds,
   errorTileUrl: '',
