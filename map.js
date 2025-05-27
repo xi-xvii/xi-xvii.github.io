@@ -25,7 +25,6 @@ L.tileLayer('tiles/{z}/{x}/{y}.png', {
   bounds: bounds,
   minZoom: 0,
   maxZoom: maxZoom,
-  errorTileUrl: ''
 }).addTo(map);
 
 console.log("🧱 tileLayer added");
