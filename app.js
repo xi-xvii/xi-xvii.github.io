@@ -1,15 +1,16 @@
 // 🍃 Debug
 console.log("▶️ app.js loaded");
 
-// 1) Image size in pixels
+// 1) Image dimensions
 const imgW = 11000;
 const imgH = 11000;
+const tileSize = 256;
 const maxZ = 6;
 
-// 2) Define bounds in pixel space (bottom-left origin)
+// 2) Define map bounds (pixel coordinates)
 const bounds = L.latLngBounds([0, 0], [imgH, imgW]);
 
-// 3) Init the map
+// 3) Initialize map
 const map = L.map('map', {
   crs: L.CRS.Simple,
   minZoom: 0,
@@ -21,18 +22,24 @@ const map = L.map('map', {
 
 console.log("🗺️ map initialized & fit to bounds:", bounds);
 
-// 4) Add XYZ tile layer
-L.tileLayer('tiles/{z}/{x}/{y}.png', {
+// 4) Add flipped-Y tile layer
+L.tileLayer('', {
   noWrap: true,
   minZoom: 0,
   maxZoom: maxZ,
+  tileSize: tileSize,
   bounds: bounds,
-  tileSize: 256,
-  errorTileUrl: '' // suppress 404 images
+  errorTileUrl: '',
+
+  // Flip Y since L.CRS.Simple starts at bottom-left
+  getTileUrl: function (coords) {
+    const yFlipped = Math.pow(2, coords.z) - coords.y - 1;
+    return `tiles/${coords.z}/${coords.x}/${yFlipped}.png`;
+  }
 }).addTo(map);
 
 console.log("🧱 tileLayer added");
 
-// 5) Debug events
+// 5) Debugging
 map.on('tileload', e => console.log("✅", e.tile.src));
 map.on('tileerror', e => console.warn("❌", e.tile.src));
