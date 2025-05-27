@@ -1,37 +1,26 @@
 // 🍃 Debug
 console.log("▶️ app.js loaded");
 
-// 1) Your image’s pixel size and max zoom
+// 1) Image size in pixels
 const imgW = 11000;
 const imgH = 11000;
-const maxZ = 6;
 
-// 2) Define the map bounds in “pixel” coords: [southWest, northEast]
-const bounds = L.latLngBounds([0, 0], [imgH, imgW]);
+// 2) Define map bounds using CRS.Simple (0,0 is bottom-left)
+const bounds = [[0, 0], [imgH, imgW]];
 
-// 3) Init the map, snap zooms to integers, and fit to those bounds
+// 3) Init the map and fit to image bounds
 const map = L.map('map', {
-  crs:        L.CRS.Simple,
-  minZoom:    0,
-  maxZoom:    maxZ,
-  zoomSnap:   1,
-  zoomDelta:  1,
-  zoomControl:true
+  crs: L.CRS.Simple,
+  minZoom: -2,
+  maxZoom: 2,
+  zoomSnap: 1,
+  zoomDelta: 1,
+  zoomControl: true
 }).fitBounds(bounds);
 
 console.log("🗺️ map initialized & fit to bounds:", bounds);
 
-// 4) Add your XYZ tiles (no TMS, only positive indices)
-L.tileLayer('tiles/{z}/{x}/{y}.png', {
-  noWrap:          true,
-  continuousWorld: false,
-  minZoom:         0,
-  maxZoom:         maxZ,
-  errorTileUrl:    ''    // blank instead of 404s
-}).addTo(map);
+// 4) Add the static image as an overlay
+L.imageOverlay('map.png', bounds).addTo(map);
 
-console.log("🖼️ tileLayer added");
-
-// 5) (Optional) debug tile loads
-map.on('tileload',  e => console.log("✅", e.tile.src));
-map.on('tileerror', e => console.warn("❌", e.tile.src));
+console.log("🖼️ imageOverlay added");
