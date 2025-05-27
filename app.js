@@ -1,16 +1,23 @@
 // 🍃 Debug
 console.log("▶️ app.js loaded");
 
-// 1) Full image dimensions
+// 1) Image & tile config
 const imgW = 11000;
 const imgH = 11000;
 const tileSize = 256;
 const maxZ = 7;
 
-// 2) Define bounds of the full image
-const bounds = L.latLngBounds([0, 0], [imgH, imgW]);
+// 2) Leaflet scales CRS.Simple from zoom 0 upward. So:
+// At zoom 7: 256 * 2^7 = 32768px → we want our image (11000px) to fit inside that space
+// We'll scale the image accordingly
+const scale = Math.pow(2, maxZ); // 128 for zoom 7
+const scaledW = imgW / scale;
+const scaledH = imgH / scale;
 
-// 3) Init map, center at middle, start at zoom 0
+// 3) Define bounds at zoom level 0
+const bounds = L.latLngBounds([0, 0], [scaledH, scaledW]);
+
+// 4) Init map, center at image center in scaled units
 const map = L.map('map', {
   crs: L.CRS.Simple,
   minZoom: 0,
@@ -18,19 +25,11 @@ const map = L.map('map', {
   zoomSnap: 1,
   zoomDelta: 1,
   zoomControl: true
-}).setView([imgH / 2, imgW / 2], 0);
+}).setView([scaledH / 2, scaledW / 2], maxZ); // start fully zoomed in
 
 console.log("🗺️ map initialized & centered");
 
-// 4) Add red rectangle overlay at zoom 0 tile bounds
-const tileGrid = L.rectangle([[0, 0], [tileSize, tileSize]], {
-  color: 'red',
-  weight: 2
-}).addTo(map);
-
-console.log("📏 overlay tile 0/0/0 bounds:", [[0, 0], [tileSize, tileSize]]);
-
-// 5) Tile layer with Y-flip + debug
+// 5) Tile layer with flipped Y
 L.tileLayer('', {
   noWrap: true,
   minZoom: 0,
@@ -49,7 +48,7 @@ L.tileLayer('', {
 
 console.log("🧱 tileLayer added");
 
-// 6) Tile load debug
+// 6) Debug tile loads
 map.on('tileloadstart', e => console.log("🌀 loading:", e.tile.src));
 map.on('tileload',     e => console.log("✅ loaded:", e.tile.src));
 map.on('tileerror',    e => console.warn("❌ error:", e.tile.src));
