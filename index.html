@@ -12,25 +12,27 @@
     crossorigin=""
   />
 
-<style>
-  html, body {
-    height: 100%;
-    margin: 0;
-    background: url('your-background.jpg') no-repeat center center fixed;
-    background-size: cover;
-  }
-  #map {
-    height: 100%;
-    background: transparent;
-  }
-  .leaflet-tile {
-    opacity: 0;
-    transition: opacity 0.4s ease-in-out;
-  }
-  .leaflet-tile-loaded {
-    opacity: 1;
-  }
-</style>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      background: url('your-background.jpg') no-repeat center center fixed;
+      background-size: cover;
+    }
+    #map {
+      height: 100%;
+      background: transparent;
+    }
+    .leaflet-tile {
+      transition: opacity 0.5s ease-in;
+    }
+    .leaflet-tile.high-res-tiles {
+      opacity: 0;
+    }
+    .leaflet-tile-loaded.high-res-tiles {
+      opacity: 1;
+    }
+  </style>
 </head>
 <body>
   <div id="map"></div>

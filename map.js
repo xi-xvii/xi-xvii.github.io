@@ -16,6 +16,7 @@ const map = L.map('map', {
   zoomControl:       true,
   attributionControl:false,
 })
+
 // 4) Compute the LatLng-bounds of the full image at z=8:
 const sw     = map.unproject([0,    imgH], nativeZoom);
 const ne     = map.unproject([imgW, 0   ], nativeZoom);
@@ -24,12 +25,25 @@ const bounds = L.latLngBounds(sw, ne);
 // 5) Show the whole image on load, and prevent dragging outside it:
 map.fitBounds(bounds);
 
-// 6) Add your tileLayer **without** the `bounds:` option
-//    so Leaflet will load every tile for the current zoom+view:
+// 6) Add a low-res tile layer (2 zoom levels down) as background
 L.tileLayer('tiles/{z}/{x}/{y}.png', {
-  noWrap:          true,         // don’t wrap world-map style
-  continuousWorld: false,        // same
+  noWrap:          true,
+  continuousWorld: false,
   tileSize:        256,
-  maxNativeZoom:   nativeZoom,   // never ask for z>8
-  errorTileUrl:    ''            // hide broken-image icons
+  maxZoom:         nativeZoom - 2,
+  opacity:         1,
+  zIndex:          0,
+  className:       'low-res-tiles'
+}).addTo(map);
+
+// 7) Add a high-res tile layer with fade-in effect
+L.tileLayer('tiles/{z}/{x}/{y}.png', {
+  noWrap:          true,
+  continuousWorld: false,
+  tileSize:        256,
+  maxNativeZoom:   nativeZoom,
+  errorTileUrl:    '',
+  opacity:         1,
+  zIndex:          1,
+  className:       'high-res-tiles'
 }).addTo(map);
