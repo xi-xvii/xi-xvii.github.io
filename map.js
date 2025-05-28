@@ -2,12 +2,9 @@ console.log("▶️ map.js loaded");
 
 const tileSize = 256;
 const maxZoom = 8;
+const mapSize = tileSize * Math.pow(2, maxZoom); // 65536 pixels
 
-// Snap to full tiles: 43 tiles at zoom 8 = 11008px
-const pixelWidth = 43 * tileSize;
-const pixelHeight = 43 * tileSize;
-
-const bounds = [[0, 0], [pixelHeight, pixelWidth]];
+const bounds = [[0, 0], [mapSize, mapSize]];
 
 const map = L.map('map', {
   crs: L.CRS.Simple,
@@ -17,9 +14,10 @@ const map = L.map('map', {
 
 console.log("🗺️ map initialized");
 
+// ✅ Use your GitHub Pages path with proper tile math
 L.tileLayer('https://xi-xvii.github.io/tiles/{z}/{x}/{y}.png', {
   tileSize: tileSize,
-  tms: true,
+  tms: true,         // Use this ONLY if tiles use bottom-left origin
   noWrap: true,
   minZoom: 0,
   maxZoom: maxZoom,
