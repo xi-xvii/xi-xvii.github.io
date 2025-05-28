@@ -1,33 +1,35 @@
-// 1) The zoom level your tiles live at
+// map.js
+
+// 1) The zoom level your tiles were generated at
 const nativeZoom = 8;
 
-// 2) How many tiles wide/tall you have at that zoom
-//    (e.g. if x runs 0–9 you have 10 columns; same for y)
+// 2) How many tiles you have in X and Y at that zoom
 const tileCountX = 10;
 const tileCountY = 10;
 
-// 3) Bounds in "tile‐coords" [southWest, northEast]:
-//    y goes downward (so we invert it with a minus)
+// 3) Build bounds in “tile‐coords” (y goes downward)
 const bounds = L.latLngBounds(
-  [ -tileCountY,  0 ],   // SW corner: y = -tileCountY
-  [      0,      tileCountX ]  // NE corner: y = 0, x = tileCountX
+  [ -tileCountY,  0 ], // SW: lat = –tileCountY → bottom
+  [      0,      tileCountX ]  // NE: lat = 0,       x = tileCountX → top/right
 );
 
+// 4) Init map with a zoom range from 0 up to your native zoom
 const map = L.map('map', {
-  crs:             L.CRS.Simple,
-  minZoom:         nativeZoom,
-  maxZoom:         nativeZoom,
-  zoomControl:     false,       // remove the +/- UI
-  scrollWheelZoom: false,       // disable wheel zoom
-  doubleClickZoom: false
+  crs:            L.CRS.Simple,
+  minZoom:        0,
+  maxZoom:        nativeZoom,
+  zoomControl:    true,   // show +/- buttons
+  scrollWheelZoom:true,   // allow wheel zoom
+  doubleClickZoom:true    // allow dblclick zoom
 })
-// center on the middle tile
-.setView([ -tileCountY/2, tileCountX/2 ], nativeZoom);
+  // 5) On load, scale & pan so the whole map is in view
+  .fitBounds(bounds);
 
+// 6) Point at your tile folder, but force Leaflet to only ever _request_ z=nativeZoom
+//    and to _scale_ those tiles at all other zoom levels.
 L.tileLayer('tiles/{z}/{x}/{y}.png', {
-  bounds:        bounds,
-  minZoom:       nativeZoom,
-  maxZoom:       nativeZoom,
-  noWrap:        true,
-  errorTileUrl:  ''            // hide broken‐image icons
+  bounds:           bounds,
+  noWrap:           true,
+  minNativeZoom:    nativeZoom,
+  maxNativeZoom:    nativeZoom,
 }).addTo(map);
