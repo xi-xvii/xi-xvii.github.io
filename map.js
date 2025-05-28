@@ -1,11 +1,11 @@
 // map.js
 
-// 1) Your highest-res zoom and image size
+// ▪︎ Your highest-res zoom level and full image pixels
 const nativeZoom = 8;
 const imgW       = 11008;
 const imgH       = 11008;
 
-// 2) Init the map
+// ▪︎ Initialize the map (CRS.Simple, zoom 0…8)
 const map = L.map('map', {
   crs:                L.CRS.Simple,
   minZoom:            0,
@@ -16,33 +16,32 @@ const map = L.map('map', {
   attributionControl: false
 });
 
-// 3) Figure out our full-image bounds at z = 8
-const sw     = map.unproject([0,    imgH], nativeZoom);
-const ne     = map.unproject([imgW, 0   ], nativeZoom);
+// ▪︎ Compute LatLng bounds of the full image at z = nativeZoom
+const sw     = map.unproject([0,    imgH], nativeZoom); // bottom-left
+const ne     = map.unproject([imgW, 0   ], nativeZoom); // top-right
 const bounds = L.latLngBounds(sw, ne);
+
+// ▪︎ Fit the map to show the whole image on load
 map.fitBounds(bounds);
 
-// 4) Make a new pane for the low-res base
+// ▪︎ Create a pane for the low-res overlay (beneath tiles)
 map.createPane('lowresPane');
-// put it *below* the tilePane (which is at z-index 200)
-map.getPane('lowresPane').style.zIndex        = 100;
-// clicks/drag should go through it
+map.getPane('lowresPane').style.zIndex        = 100;  // below tilePane (200)
 map.getPane('lowresPane').style.pointerEvents = 'none';
 
-// 5) Add your 2048×2048 image to that pane…
+// ▪︎ Add the 2048×2048 PNG, stretched to the full 11 008×11 008 bounds
 const lowresLayer = L.imageOverlay('lowres/map-lowres.png', bounds, {
   pane:    'lowresPane',
   opacity: 1
 }).addTo(map);
-// …and force it to the very back of its pane
-lowresLayer.bringToBack();
+lowresLayer.bringToBack(); // ensure it’s at the very back
 
-// 6) Now add your tiles on top
+// ▪︎ Finally, add your tile layer on top (fading in via CSS)
 const tiles = L.tileLayer('tiles/{z}/{x}/{y}.png', {
   noWrap:          true,
   continuousWorld: false,
   tileSize:        256,
-  maxNativeZoom:   nativeZoom
+  maxNativeZoom:   nativeZoom  // never request z > 8
 }).addTo(map);
-// make sure they’re in front
-tiles.bringToFront();
+tiles.bringToFront(); // ensure tiles are above everything
+
