@@ -1,6 +1,6 @@
 console.log("▶️ map.js loaded");
 
-// 256x256 pixel map for one tile at zoom 0
+// 1 tile = 256x256 pixels
 const tileSize = 256;
 const bounds = [[0, 0], [tileSize, tileSize]];
 
@@ -12,10 +12,18 @@ const map = L.map('map', {
 
 console.log("🗺️ map initialized");
 
-L.tileLayer('tiles/{z}/{x}/{y}.png', {
+// Flip Y axis manually for zoom 0
+L.tileLayer('', {
   tileSize: tileSize,
+  minZoom: 0,
+  maxZoom: 0,
   noWrap: true,
-  bounds: bounds
+  getTileUrl: function (coords) {
+    const flippedY = 0; // Since zoom 0 has only one tile: 0/0/0
+    const url = `tiles/${coords.z}/${coords.x}/${flippedY}.png`;
+    console.log("🧭 requesting tile:", url);
+    return url;
+  }
 }).addTo(map);
 
 console.log("🧱 tileLayer added");
