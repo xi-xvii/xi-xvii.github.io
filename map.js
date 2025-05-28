@@ -1,9 +1,11 @@
-// 1) Your highest-res zoom level and full-image pixel dimensions:
+// map.js
+
+// ▪︎ Your highest‐res zoom & full‐image dims
 const nativeZoom = 8;
 const imgW       = 11008;
 const imgH       = 11008;
 
-// 2) Initialize a CRS.Simple map (zoom 0…8):
+// ▪︎ Init the map (CRS.Simple, zoom 0…8)
 const map = L.map('map', {
   crs:                L.CRS.Simple,
   minZoom:            0,
@@ -14,29 +16,31 @@ const map = L.map('map', {
   attributionControl: false
 });
 
-// 3) Compute the map’s bounds in LatLng space at z = nativeZoom:
-const southWest = map.unproject([0,    imgH], nativeZoom);
-const northEast = map.unproject([imgW, 0   ], nativeZoom);
-const bounds     = L.latLngBounds(southWest, northEast);
+// ▪︎ Compute the exact LatLng‐bounds of your 11 008×11 008 image at z = 8
+const sw     = map.unproject([0,    imgH], nativeZoom); // bottom-left
+const ne     = map.unproject([imgW, 0   ], nativeZoom); // top-right
+const bounds = L.latLngBounds(sw, ne);
 
-// 4) Fit the map to show the entire image on load:
+// ▪︎ Fit to show the entire image on load
 map.fitBounds(bounds);
 
-// 5) Add your tiles (one 256×256 tile per {z}/{x}/{y} folder):
+// ▪︎ Create a custom pane above the tiles (optional, but keeps things tidy)
+map.createPane('overlayPane');
+map.getPane('overlayPane').style.zIndex        = 300;
+map.getPane('overlayPane').style.pointerEvents = 'none';
+
+// ▪︎ Add your low-res PNG on top, with our force-stretch class
+const overlay = L.imageOverlay('lowres/map-lowres.png', bounds, {
+  pane:      'overlayPane',
+  className: 'lowres-overlay',
+  opacity:   1
+}).addTo(map);
+overlay.bringToFront();
+
+// ▪︎ Finally, add your tile layer beneath it
 L.tileLayer('tiles/{z}/{x}/{y}.png', {
   noWrap:          true,
   continuousWorld: false,
   tileSize:        256,
   maxNativeZoom:   nativeZoom
-}).addTo(map);
-
-// 6) Add the flat, image-based scale control
-//    Suppose in your fantasy world 1 km = 100 px at zoom 8:
-//      ⇒ 1 px = 0.01 km ⇒ 1000 px = 10 km
-L.control.graphicScale({
-  doubleLine:    true,    // mimic Leaflet's default style
-  fill:          'hollow',// or 'solid'
-  showSubunits:  true,    // show smaller graduations
-  unitsPer1000px: 10,      // 10 km per 1000 px at maxZoom
-  scaleUnit:     'km'     // label the unit “km”
 }).addTo(map);
