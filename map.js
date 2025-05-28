@@ -1,10 +1,11 @@
 // map.js
 
-// 1) Zoom & full-size (11 008×11 008px) of your image
+// 1) Your highest-res zoom and full image pixel size
 const nativeZoom = 8;
-const imgW = 11008, imgH = 11008;
+const imgW = 11008;
+const imgH = 11008;
 
-// 2) Init a Simple-CRS map (zoom 0→8)
+// 2) Initialize the map (CRS.Simple, zoomable 0…8)
 const map = L.map('map', {
   crs:                L.CRS.Simple,
   minZoom:            0,
@@ -15,33 +16,31 @@ const map = L.map('map', {
   attributionControl: false
 });
 
-// 3) Compute the LatLngBounds of the full image at z=8
-const sw = map.unproject([0,    imgH], nativeZoom);  // bottom-left
-const ne = map.unproject([imgW, 0   ], nativeZoom);  // top-right
+// 3) Compute the LatLng bounds of your 11 008×11 008 image at zoom 8
+const sw = map.unproject([0,    imgH], nativeZoom);   // bottom-left
+const ne = map.unproject([imgW, 0   ], nativeZoom);   // top-right
 const bounds = L.latLngBounds(sw, ne);
 
-// 4) Fit the map to show the entire image area
+// 4) Fit to those bounds so you start zoomed out
 map.fitBounds(bounds);
 
-// 5) Add your tile layer as before
-const tiles = L.tileLayer('tiles/{z}/{x}/{y}.png', {
+// 5) Create a custom pane for your overlay, above the default tilePane
+map.createPane('overlayPane');
+// default tilePane z-index is 200, so pick something higher
+map.getPane('overlayPane').style.zIndex        = 300;
+map.getPane('overlayPane').style.pointerEvents = 'none';  // let clicks through
+
+// 6) Add your low-res image into that pane (stretched to the full bounds)
+const overlay = L.imageOverlay('lowres/map-lowres.png', bounds, {
+  pane: 'overlayPane',
+  opacity: 1
+}).addTo(map);
+overlay.bringToFront();  // ensure it’s topmost in its pane
+
+// 7) Finally, add your tile layer on the default tilePane
+L.tileLayer('tiles/{z}/{x}/{y}.png', {
   noWrap:          true,
   continuousWorld: false,
   tileSize:        256,
   maxNativeZoom:   nativeZoom
 }).addTo(map);
-
-// 6) **Then** overlay your low-res PNG in front (zIndex=1000)
-const overlay = L.imageOverlay('lowres/map-lowres.png', bounds, {
-  zIndex: 1000
-}).addTo(map);
-
-// 7) Make absolutely sure it’s on top
-overlay.bringToFront();
-tiles.bringToBack();
-
-// ——— NEW: force full-map scaling ———
-const imgEl = overlay.getElement();
-imgEl.style.width  = `${imgW}px`;  // 11008px
-imgEl.style.height = `${imgH}px`;  // 11008px
-imgEl.style.objectFit = 'fill';     // ensure it stretches
