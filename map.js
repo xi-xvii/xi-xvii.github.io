@@ -19,7 +19,6 @@ console.log("🗺️ map initialized");
 // ✅ Use full GitHub Pages URL for tiles
 L.tileLayer('https://xi-xvii.github.io/tiles/{z}/{x}/{y}.png', {
   tileSize: tileSize,
-  tms: true,         // Flip Y-axis to match bottom-left origin
   noWrap: true,
   minZoom: 0,
   maxZoom: maxZoom,
