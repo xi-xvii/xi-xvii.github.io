@@ -7,8 +7,8 @@ const tileCountY  = 9;
 const tileSize    = 256;
 
 // 2) Compute the full image’s pixel size:
-const imgW = tileCountX * tileSize; // e.g. 10 × 256 = 2560
-const imgH = tileCountY * tileSize; // same in Y
+const imgW = 11008
+const imgH = 11008
 
 // 3) Initialize the map in CRS.Simple, allow zoom all the way out to 0 and in to nativeZoom:
 const map = L.map('map', {
