@@ -2,8 +2,9 @@ console.log("▶️ map.js loaded");
 
 const tileSize = 256;
 const maxZoom = 8;
-const mapSize = tileSize * Math.pow(2, maxZoom); // 65536 pixels
+const mapSize = tileSize * Math.pow(2, maxZoom); // 65536
 
+// Define exact bounds to restrict tile fetching
 const bounds = [[0, 0], [mapSize, mapSize]];
 
 const map = L.map('map', {
@@ -14,14 +15,13 @@ const map = L.map('map', {
 
 console.log("🗺️ map initialized");
 
-// ✅ Use your GitHub Pages path with proper tile math
+// DO NOT use `tms: true` unless Y=0 is BOTTOM of image
 L.tileLayer('https://xi-xvii.github.io/tiles/{z}/{x}/{y}.png', {
   tileSize: tileSize,
-  tms: true,         // Use this ONLY if tiles use bottom-left origin
   noWrap: true,
+  bounds: bounds,
   minZoom: 0,
   maxZoom: maxZoom,
-  bounds: bounds,
   attribution: 'GTA VI Fan Map'
 }).addTo(map);
 
