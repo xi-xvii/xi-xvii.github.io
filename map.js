@@ -17,7 +17,6 @@ console.log("🗺️ map initialized");
 L.tileLayer('tiles/{z}/{x}/{y}.png', {
   tileSize: tileSize,
   noWrap: true,
-  tms: true,  // Flip y-axis for bottom-left origin tiles
   minZoom: 0,
   maxZoom: maxZoom,
   bounds: bounds,
