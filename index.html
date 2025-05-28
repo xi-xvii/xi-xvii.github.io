@@ -1,25 +1,33 @@
+<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <title>Custom Tile Map</title>
 
-  <!-- Leaflet CSS — integrity removed -->
+  <!-- Leaflet CSS -->
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
   />
 
+  <!-- tile-fade CSS -->
   <style>
-    html, body, #map { margin:0; padding:0; height:100%; width:100% }
+    html, body, #map { margin:0; padding:0; height:100%; width:100%; }
+    .leaflet-tile {
+      opacity: 0;
+      transition: opacity 0.3s ease-in;
+    }
+    .leaflet-tile-loaded {
+      opacity: 1 !important;
+    }
   </style>
 </head>
 <body>
   <div id="map"></div>
 
-  <!-- Leaflet JS — integrity removed -->
+  <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
   <!-- Your map logic -->
   <script src="map.js"></script>
 </body>
