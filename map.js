@@ -14,7 +14,7 @@ const imgH = tileCountY * tileSize; // same in Y
 const map = L.map('map', {
   crs:             L.CRS.Simple,
   minZoom:         0,
-  maxZoom:         nativeZoom,
+  maxZoom:         8,
   zoomSnap:        1,
   zoomDelta:       1,
   zoomControl:     true,
