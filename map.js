@@ -1,47 +1,38 @@
 // map.js
 
-// ▪︎ Your highest-res zoom level and full image pixels
+// 1) Your top zoom & full-pixel dims
 const nativeZoom = 8;
-const imgW       = 11008;
-const imgH       = 11008;
+const imgW = 11008, imgH = 11008;
 
-// ▪︎ Initialize the map (CRS.Simple, zoom 0…8)
+// 2) Init a Simple-CRS map zoomable 0…8
 const map = L.map('map', {
-  crs:                L.CRS.Simple,
-  minZoom:            0,
-  maxZoom:            nativeZoom,
-  zoomSnap:           1,
-  zoomDelta:          1,
-  zoomControl:        true,
+  crs:             L.CRS.Simple,
+  minZoom:         0,
+  maxZoom:         nativeZoom,
+  zoomSnap:        1,
+  zoomDelta:       1,
+  zoomControl:     true,
   attributionControl: false
 });
 
-// ▪︎ Compute LatLng bounds of the full image at z = nativeZoom
-const sw     = map.unproject([0,    imgH], nativeZoom); // bottom-left
-const ne     = map.unproject([imgW, 0   ], nativeZoom); // top-right
+// 3) Compute the LatLng bounds of your 11 008×11 008 image at z=8
+const sw = map.unproject([0,    imgH], nativeZoom); // bottom-left
+const ne = map.unproject([imgW, 0   ], nativeZoom); // top-right
 const bounds = L.latLngBounds(sw, ne);
 
-// ▪︎ Fit the map to show the whole image on load
+// 4) Fit the map so you start seeing the entire image
 map.fitBounds(bounds);
 
-// ▪︎ Create a pane for the low-res overlay (beneath tiles)
-map.createPane('lowresPane');
-map.getPane('lowresPane').style.zIndex        = 100;  // below tilePane (200)
-map.getPane('lowresPane').style.pointerEvents = 'none';
-
-// ▪︎ Add the 2048×2048 PNG, stretched to the full 11 008×11 008 bounds
-const lowresLayer = L.imageOverlay('lowres/map-lowres.png', bounds, {
-  pane:    'lowresPane',
-  opacity: 1
+// 5) **Overlay your 2 048×2 048 PNG in the _tilePane_** so it’s
+//    panned & zoomed just like your tiles:
+L.imageOverlay('lowres/map-lowres.png', bounds, {
+  pane: 'tilePane'    // default TileLayer pane
 }).addTo(map);
-lowresLayer.bringToBack(); // ensure it’s at the very back
 
-// ▪︎ Finally, add your tile layer on top (fading in via CSS)
-const tiles = L.tileLayer('tiles/{z}/{x}/{y}.png', {
+// 6) Finally add your tiles on top of it
+L.tileLayer('tiles/{z}/{x}/{y}.png', {
   noWrap:          true,
   continuousWorld: false,
   tileSize:        256,
-  maxNativeZoom:   nativeZoom  // never request z > 8
+  maxNativeZoom:   nativeZoom
 }).addTo(map);
-tiles.bringToFront(); // ensure tiles are above everything
-
