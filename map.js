@@ -1,38 +1,33 @@
-// 🍃 Debug
-console.log("▶️ app.js loaded");
+// map.js
 
-// 1) Your image’s pixel size and max zoom
+// 1) Image size in pixels and maximum zoom level
 const imgW = 11000;
 const imgH = 11000;
-const maxZ = 6;
+const maxZoom = 6;
 
-// 2) Define the map bounds in Leaflet's top-left origin format
-const bounds = L.latLngBounds([imgH, 0], [0, imgW]);
+// 2) Define bounds so that lat=0 is top, lat=–imgH is bottom
+const bounds = L.latLngBounds(
+  [ -imgH,  0 ],  // SW corner: lat = –11000 → pixelY = +11000 (bottom)
+  [     0, imgW ] // NE corner: lat = 0     → pixelY = 0     (top)
+);
 
-// 3) Init the map, snap zooms to integers, and fit to those bounds
+// 3) Initialize the map with Simple CRS and fit to those bounds
 const map = L.map('map', {
-  crs:        L.CRS.Simple,
-  minZoom:    0,
-  maxZoom:    maxZ,
-  zoomSnap:   1,
-  zoomDelta:  1,
-  zoomControl:true
+  crs:            L.CRS.Simple,
+  minZoom:        0,
+  maxZoom:        maxZoom,
+  zoomSnap:       1,
+  zoomDelta:      1,
+  zoomControl:    true,
+  attributionControl: false
 }).fitBounds(bounds);
 
-console.log("🗺️ map initialized & fit to bounds:", bounds);
-
-// 4) Add your XYZ tiles, constrain to bounds
+// 4) Point Leaflet at your tile folder (z/x/y) and lock to those bounds
 L.tileLayer('tiles/{z}/{x}/{y}.png', {
-  bounds:           bounds,
-  noWrap:           true,
-  continuousWorld:  false,
-  minZoom:          0,
-  maxZoom:          maxZ,
-  errorTileUrl:     ''
+  bounds:          bounds,
+  noWrap:          true,
+  continuousWorld: false,
+  minZoom:         0,
+  maxZoom:         maxZoom,
+  errorTileUrl:    ''    // avoid broken‐image icon
 }).addTo(map);
-
-console.log("🖼️ tileLayer added");
-
-// 5) (Optional) debug tile loads
-map.on('tileload',  e => console.log("✅", e.tile.src));
-map.on('tileerror', e => console.warn("❌", e.tile.src));
