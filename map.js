@@ -27,4 +27,22 @@ map.createPane('lowresPane');
 // put it *below* the tilePane (which is at z-index 200)
 map.getPane('lowresPane').style.zIndex        = 100;
 // clicks/drag should go through it
-map.getPane('lowresPane').style.pointe
+map.getPane('lowresPane').style.pointerEvents = 'none';
+
+// 5) Add your 2048×2048 image to that pane…
+const lowresLayer = L.imageOverlay('lowres/map-lowres.png', bounds, {
+  pane:    'lowresPane',
+  opacity: 1
+}).addTo(map);
+// …and force it to the very back of its pane
+lowresLayer.bringToBack();
+
+// 6) Now add your tiles on top
+const tiles = L.tileLayer('tiles/{z}/{x}/{y}.png', {
+  noWrap:          true,
+  continuousWorld: false,
+  tileSize:        256,
+  maxNativeZoom:   nativeZoom
+}).addTo(map);
+// make sure they’re in front
+tiles.bringToFront();
