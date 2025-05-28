@@ -5,6 +5,7 @@ const imgH = 11000;
 const tileSize = 256;
 const maxZoom = 8;
 
+// Set bounds to match image dimensions (in pixels)
 const bounds = [[0, 0], [imgH, imgW]];
 
 const map = L.map('map', {
@@ -15,10 +16,10 @@ const map = L.map('map', {
 
 console.log("🗺️ map initialized");
 
-// Now Leaflet knows image size, and uses correct tile math
-L.tileLayer('tiles/{z}/{x}/{y}.png', {
+// ✅ Use full GitHub Pages URL for tiles
+L.tileLayer('https://xi-xvii.github.io/tiles/{z}/{x}/{y}.png', {
   tileSize: tileSize,
-  tms: true,
+  tms: true,         // Flip Y-axis to match bottom-left origin
   noWrap: true,
   minZoom: 0,
   maxZoom: maxZoom,
