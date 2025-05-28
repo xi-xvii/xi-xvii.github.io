@@ -33,6 +33,6 @@ L.tileLayer('tiles/{z}/{x}/{y}.png', {
   noWrap:          true,
   continuousWorld: false,
   tileSize:        256,
-  minNativeZoom:   nativeZoom, // if user zooms out below 8, still fetch z=8
-  maxNativeZoom:   nativeZoom  // if user zooms in above 8, still fetch z=8
+  minNativeZoom:   0, // if user zooms out below 8, still fetch z=8
+  maxNativeZoom:   8  // if user zooms in above 8, still fetch z=8
 }).addTo(map);
