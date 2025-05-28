@@ -1,9 +1,9 @@
 // map.js
 
 // 1) Your “native” zoom level and how many 256×256 tiles you have at that zoom:
-const tileCountX  = 29241;
-const nativeZoom = 8;
-const tileCountY  = 29241;
+const tileCountX  = 4;
+const nativeZoom = 1;
+const tileCountY  = 4;
 const tileSize    = 256;
 
 // 2) Compute the full image’s pixel size:
