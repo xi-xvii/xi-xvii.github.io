@@ -1,40 +1,21 @@
 console.log("▶️ map.js loaded");
 
-const imgW = 11000;
-const imgH = 11000;
+// 256x256 pixel map for one tile at zoom 0
 const tileSize = 256;
-const maxZoom = 8;
-const tileCount = 1 << maxZoom;
-
-const scaledW = imgW / tileSize;
-const scaledH = imgH / tileSize;
-const mapW = tileCount * tileSize;
-const mapH = tileCount * tileSize;
-
-// Leaflet pixel bounds (in CRS.Simple space)
-const bounds = [[0, 0], [mapH, mapW]];
+const bounds = [[0, 0], [tileSize, tileSize]];
 
 const map = L.map('map', {
   crs: L.CRS.Simple,
   minZoom: 0,
-  maxZoom: maxZoom
+  maxZoom: 0
 }).fitBounds(bounds);
 
 console.log("🗺️ map initialized");
 
-L.tileLayer('', {
+L.tileLayer('tiles/{z}/{x}/{y}.png', {
   tileSize: tileSize,
-  minZoom: 0,
-  maxZoom: maxZoom,
   noWrap: true,
-  bounds: bounds,
-  getTileUrl: function (coords) {
-    const maxY = (1 << coords.z) - 1;
-    const yFlipped = maxY - coords.y;
-    const url = `tiles/${coords.z}/${coords.x}/${yFlipped}.png`;
-    console.log("🧭 requesting tile:", url);
-    return url;
-  }
+  bounds: bounds
 }).addTo(map);
 
 console.log("🧱 tileLayer added");
