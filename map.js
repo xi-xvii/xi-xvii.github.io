@@ -39,3 +39,9 @@ const overlay = L.imageOverlay('lowres/map-lowres.png', bounds, {
 // 7) Make absolutely sure it’s on top
 overlay.bringToFront();
 tiles.bringToBack();
+
+// ——— NEW: force full-map scaling ———
+const imgEl = overlay.getElement();
+imgEl.style.width  = `${imgW}px`;  // 11008px
+imgEl.style.height = `${imgH}px`;  // 11008px
+imgEl.style.objectFit = 'fill';     // ensure it stretches
