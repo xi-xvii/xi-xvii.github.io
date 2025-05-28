@@ -21,16 +21,7 @@
     }
     #map {
       height: 100%;
-      background: transparent;
-    }
-    .leaflet-tile {
-      transition: opacity 0.5s ease-in;
-    }
-    .leaflet-tile.high-res-tiles {
-      opacity: 0;
-    }
-    .leaflet-tile-loaded.high-res-tiles {
-      opacity: 1;
+      background: transparent; /* Let the body background show through if tiles are missing */
     }
   </style>
 </head>
