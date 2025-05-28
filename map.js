@@ -1,18 +1,20 @@
 console.log("▶️ map.js loaded");
 
-// 1) Real image size
 const imgW = 11000;
 const imgH = 11000;
 const tileSize = 256;
 const maxZoom = 8;
-const scale = Math.pow(2, maxZoom); // 256 tiles at zoom 8
+const scale = Math.pow(2, maxZoom);
 
-// 2) Scaled size for zoom 0
+const tileCount = {
+  x: Math.ceil(imgW / tileSize),
+  y: Math.ceil(imgH / tileSize)
+};
+
 const scaledW = imgW / scale;
 const scaledH = imgH / scale;
 const bounds = [[0, 0], [scaledH, scaledW]];
 
-// 3) Init map with scaled bounds
 const map = L.map('map', {
   crs: L.CRS.Simple,
   minZoom: 0,
@@ -21,13 +23,20 @@ const map = L.map('map', {
 
 console.log("🗺️ map initialized");
 
-// 4) TileLayer using default XYZ pattern
-L.tileLayer('tiles/{z}/{x}/{y}.png', {
+L.tileLayer('', {
   tileSize: tileSize,
-  noWrap: true,
   minZoom: 0,
   maxZoom: maxZoom,
-  // Don't restrict bounds — let Leaflet tile freely
+  noWrap: true,
+  getTileUrl: function (coords) {
+    const yFlipped = (1 << coords.z) - 1 - coords.y;
+    const url = `tiles/${coords.z}/${coords.x}/${yFlipped}.png`;
+    console.log("🧭 requesting tile:", url);
+    return url;
+  }
 }).addTo(map);
 
 console.log("🧱 tileLayer added");
+
+map.on('tileerror', e => console.warn("❌ error loading:", e.tile.src));
+map.on('tileload', e => console.log("✅ loaded:", e.tile.src));
