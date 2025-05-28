@@ -23,7 +23,6 @@ const bounds = L.latLngBounds(sw, ne);
 
 // 5) Show the whole image on load, and prevent dragging outside it:
 map.fitBounds(bounds);
-map.setMaxBounds(bounds);
 
 // 6) Add your tileLayer **without** the `bounds:` option
 //    so Leaflet will load every tile for the current zoom+view:
