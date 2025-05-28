@@ -1,33 +1,33 @@
-// map.js
+// 1) The zoom level your tiles live at
+const nativeZoom = 8;
 
-// 1) Image size in pixels and maximum zoom level
-const imgW = 11000;
-const imgH = 11000;
-const maxZoom = 6;
+// 2) How many tiles wide/tall you have at that zoom
+//    (e.g. if x runs 0–9 you have 10 columns; same for y)
+const tileCountX = 10;
+const tileCountY = 10;
 
-// 2) Define bounds so that lat=0 is top, lat=–imgH is bottom
+// 3) Bounds in "tile‐coords" [southWest, northEast]:
+//    y goes downward (so we invert it with a minus)
 const bounds = L.latLngBounds(
-  [ -imgH,  0 ],  // SW corner: lat = –11000 → pixelY = +11000 (bottom)
-  [     0, imgW ] // NE corner: lat = 0     → pixelY = 0     (top)
+  [ -tileCountY,  0 ],   // SW corner: y = -tileCountY
+  [      0,      tileCountX ]  // NE corner: y = 0, x = tileCountX
 );
 
-// 3) Initialize the map with Simple CRS and fit to those bounds
 const map = L.map('map', {
-  crs:            L.CRS.Simple,
-  minZoom:        0,
-  maxZoom:        maxZoom,
-  zoomSnap:       1,
-  zoomDelta:      1,
-  zoomControl:    true,
-  attributionControl: false
-}).fitBounds(bounds);
+  crs:             L.CRS.Simple,
+  minZoom:         nativeZoom,
+  maxZoom:         nativeZoom,
+  zoomControl:     false,       // remove the +/- UI
+  scrollWheelZoom: false,       // disable wheel zoom
+  doubleClickZoom: false
+})
+// center on the middle tile
+.setView([ -tileCountY/2, tileCountX/2 ], nativeZoom);
 
-// 4) Point Leaflet at your tile folder (z/x/y) and lock to those bounds
 L.tileLayer('tiles/{z}/{x}/{y}.png', {
-  bounds:          bounds,
-  noWrap:          true,
-  continuousWorld: false,
-  minZoom:         0,
-  maxZoom:         maxZoom,
-  errorTileUrl:    ''    // avoid broken‐image icon
+  bounds:        bounds,
+  minZoom:       nativeZoom,
+  maxZoom:       nativeZoom,
+  noWrap:        true,
+  errorTileUrl:  ''            // hide broken‐image icons
 }).addTo(map);
