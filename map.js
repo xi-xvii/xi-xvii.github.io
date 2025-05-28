@@ -1,32 +1,30 @@
 console.log("▶️ map.js loaded");
 
-// 1 tile = 256x256 pixels
 const tileSize = 256;
-const bounds = [[0, 0], [tileSize, tileSize]];
+const maxZoom = 8;
+const mapSize = tileSize * Math.pow(2, maxZoom);
+const bounds = [[0, 0], [mapSize, mapSize]];
 
 const map = L.map('map', {
   crs: L.CRS.Simple,
   minZoom: 0,
-  maxZoom: 0
+  maxZoom: maxZoom
 }).fitBounds(bounds);
 
 console.log("🗺️ map initialized");
 
-// Flip Y axis manually for zoom 0
-L.tileLayer('', {
+// ✅ Standard tileLayer with TMS Y-axis flip
+L.tileLayer('tiles/{z}/{x}/{y}.png', {
   tileSize: tileSize,
-  minZoom: 0,
-  maxZoom: 0,
   noWrap: true,
-  getTileUrl: function (coords) {
-    const flippedY = 0; // Since zoom 0 has only one tile: 0/0/0
-    const url = `tiles/${coords.z}/${coords.x}/${flippedY}.png`;
-    console.log("🧭 requesting tile:", url);
-    return url;
-  }
+  tms: true,  // Flip y-axis for bottom-left origin tiles
+  minZoom: 0,
+  maxZoom: maxZoom,
+  bounds: bounds,
+  attribution: 'GTA VI Fan Map'
 }).addTo(map);
 
 console.log("🧱 tileLayer added");
 
-map.on('tileerror', e => console.warn("❌ error loading:", e.tile.src));
 map.on('tileload', e => console.log("✅ loaded:", e.tile.src));
+map.on('tileerror', e => console.warn("❌ error loading:", e.tile.src));
