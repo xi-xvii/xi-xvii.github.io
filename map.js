@@ -1,9 +1,11 @@
 console.log("▶️ map.js loaded");
 
+const imgW = 11000;
+const imgH = 11000;
 const tileSize = 256;
 const maxZoom = 8;
-const mapSize = tileSize * Math.pow(2, maxZoom);
-const bounds = [[0, 0], [mapSize, mapSize]];
+
+const bounds = [[0, 0], [imgH, imgW]];
 
 const map = L.map('map', {
   crs: L.CRS.Simple,
@@ -13,9 +15,10 @@ const map = L.map('map', {
 
 console.log("🗺️ map initialized");
 
-// ✅ Standard tileLayer with TMS Y-axis flip
+// Now Leaflet knows image size, and uses correct tile math
 L.tileLayer('tiles/{z}/{x}/{y}.png', {
   tileSize: tileSize,
+  tms: true,
   noWrap: true,
   minZoom: 0,
   maxZoom: maxZoom,
@@ -25,5 +28,5 @@ L.tileLayer('tiles/{z}/{x}/{y}.png', {
 
 console.log("🧱 tileLayer added");
 
-map.on('tileload', e => console.log("✅ loaded:", e.tile.src));
 map.on('tileerror', e => console.warn("❌ error loading:", e.tile.src));
+map.on('tileload', e => console.log("✅ loaded:", e.tile.src));
