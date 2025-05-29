@@ -37,10 +37,6 @@ const overlay = L.imageOverlay('lowres/map-lowres.png', bounds, {
 }).addTo(map);
 overlay.bringToFront();
 
-const img = overlay.getElement();              // <img src="lowres/map-lowres.png" …>
-img.style.transformOrigin = '0 0';             // top-left
-img.style.transform       = 'scale(2)';       // 2× larger
-
 // ▪︎ Finally, add your tile layer beneath it
 L.tileLayer('tiles/{z}/{x}/{y}.png', {
   noWrap:          true,
