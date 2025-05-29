@@ -31,6 +31,7 @@ map.getPane('overlayPane').style.pointerEvents = 'none';
 
 // ▪︎ Add your low-res PNG on top, with our force-stretch class
 const overlay = L.imageOverlay('lowres/map-lowres.png', bounds, {
+  setBounds: 'bounds'
   pane:      'overlayPane',
   className: 'lowres-overlay',
   opacity:   1
