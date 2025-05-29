@@ -2,18 +2,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- ▪︎ META & TITLE -->
   <meta charset="utf-8" />
-  <title>Custom Tile Map</title>
+  <title>GTA VI Mapping</title>
 
-  <!-- Leaflet CSS -->
+  <!-- ▪︎ LEAFLET CSS -->
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
   />
 
-  <!-- tile-fade CSS -->
+  <!-- ▪︎ PAGE & OVERLAY STYLES -->
   <style>
-    html, body, #map { margin:0; padding:0; height:100%; width:100%; }
+    /* full‐screen map */
+    html, body, #map {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* fade‐in tiles */
     .leaflet-tile {
       opacity: 0;
       transition: opacity 0.3s ease-in;
@@ -21,14 +30,21 @@
     .leaflet-tile-loaded {
       opacity: 1 !important;
     }
+
+    /* low-res underlay styling: NO width/height here! */
+    .lowres-overlay {
+      image-rendering: pixelated;
+    }
   </style>
 </head>
 <body>
+  <!-- ▪︎ MAP CONTAINER -->
   <div id="map"></div>
 
-  <!-- Leaflet JS -->
+  <!-- ▪︎ LEAFLET JS -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <!-- Your map logic -->
+
+  <!-- ▪︎ YOUR MAP LOGIC -->
   <script src="map.js"></script>
 </body>
 </html>
