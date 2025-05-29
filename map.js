@@ -16,27 +16,29 @@ const map = L.map('map', {
   attributionControl: false
 });
 
-// ▪︎ CALCULATE BOUNDS of your full-res image at z = nativeZoom
+// ▪︎ CALCULATE BOUNDS of your giant image at z = nativeZoom
 const sw     = map.unproject([0,    imgH], nativeZoom); // bottom-left
 const ne     = map.unproject([imgW, 0   ], nativeZoom); // top-right
 const bounds = L.latLngBounds(sw, ne);
 
-// ▪︎ FIT MAP to show entire image on load
+// ▪︎ FIT MAP to show the entire image on load
 map.fitBounds(bounds);
 
-// ▪︎ CREATE OVERLAY PANE for low-res underlay
-map.createPane('overlayPane');
-map.getPane('overlayPane').style.zIndex        = 300;
-map.getPane('overlayPane').style.pointerEvents = 'none';
+// ▪︎ CREATE CUSTOM PANE for low-res underlay
+map.createPane('underlayPane');
+map.getPane('underlayPane').style.zIndex        = 100;  // below the default tilePane (200)
+map.getPane('underlayPane').style.pointerEvents = 'none';
 
-// ▪︎ ADD LOW-RES IMAGE OVERLAY (will be auto-stretched)
-L.imageOverlay('lowres/map-lowres.png', bounds, {
-  pane:      'overlayPane',
-  className: 'lowres-overlay',
-  opacity:   1
+// ▪︎ ADD LOW-RES IMAGE OVERLAY (no CSS sizing, Leaflet will stretch it)
+const lowres = L.imageOverlay('lowres/map-lowres.png', bounds, {
+  pane:    'underlayPane',
+  opacity: 1
 }).addTo(map);
 
-// ▪︎ ADD HIGH-RES TILE LAYER beneath the overlay
+// ▪︎ PIXELATE it directly in JS so no width/height clash
+lowres.getElement().style.imageRendering = 'pixelated';
+
+// ▪︎ ADD HIGH-RES TILE LAYER (default pane = tilePane, zIndex 200)
 L.tileLayer('tiles/{z}/{x}/{y}.png', {
   noWrap:          true,
   continuousWorld: false,

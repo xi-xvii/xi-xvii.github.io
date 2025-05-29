@@ -1,10 +1,9 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <!-- ▪︎ META & TITLE -->
   <meta charset="utf-8" />
-  <title>GTA VI Mapping</title>
+  <title>Custom Tile Map</title>
 
   <!-- ▪︎ LEAFLET CSS -->
   <link
@@ -12,7 +11,7 @@
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
   />
 
-  <!-- ▪︎ PAGE & OVERLAY STYLES -->
+  <!-- ▪︎ PAGE & TILE STYLES -->
   <style>
     /* full‐screen map */
     html, body, #map {
@@ -22,7 +21,7 @@
       height: 100%;
     }
 
-    /* fade‐in tiles */
+    /* fade‐in for each tile as it loads */
     .leaflet-tile {
       opacity: 0;
       transition: opacity 0.3s ease-in;
@@ -31,10 +30,7 @@
       opacity: 1 !important;
     }
 
-    /* low-res underlay styling: NO width/height here! */
-    .lowres-overlay {
-      image-rendering: pixelated;
-    }
+    /* ← no .lowres-overlay width/height here! */
   </style>
 </head>
 <body>
